@@ -1,5 +1,11 @@
+import Panel from "@/components/Panel";
+
 const Home = () => {
-  return <>Hello</>;
+  return (
+    <>
+      <Panel></Panel>
+    </>
+  );
 };
 
 export default Home;
