@@ -12,7 +12,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import ChatHistory from "./chatHistory";
 import Image from "next/image";
 
 const ChatSidebar = () => {
@@ -66,7 +65,6 @@ const ChatSidebar = () => {
                   <SheetHeader>
                     <SheetTitle>History</SheetTitle>
                     <SheetDescription>
-                      <ChatHistory />
                     </SheetDescription>
                   </SheetHeader>
                 </SheetContent>
