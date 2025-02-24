@@ -1,10 +1,13 @@
 "use client";
+import { useSession } from "@clerk/nextjs";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Input } from "@/components/ui/input";
 
 const Panel = () => {
+  console.log(useSession());
   return (
     <div className="flex h-screen w-64 bg-gray-100 overflow-hidden">
       <Card className="w-full shadow-lg border-0 border-r-[1px] border-black rounded-none flex flex-col">
@@ -18,8 +21,13 @@ const Panel = () => {
             <Input></Input>
             <p className="text-gray-700">This week</p>
             <a href="">Gojo</a>
-          </div>
-          <Button>SignUp</Button>
+          </div>{" "}
+          <SignedOut>
+            <SignUpButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </CardContent>
       </Card>
     </div>

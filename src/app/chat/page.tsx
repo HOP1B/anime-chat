@@ -2,7 +2,6 @@ import Image from "next/image";
 import ChatSideFooter from "../../components/ChatFooter";
 import ChatSidebar from "@/components/ChatSidebar";
 
-
 const ChatSidePage = () => {
   return (
     <>
