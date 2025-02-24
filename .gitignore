@@ -45,3 +45,6 @@ bun.lockb
 package-lock.json
 yarn.lock
 pnpm.lock
+
+# clerk configuration (can include secrets)
+/.clerk/
