@@ -15,8 +15,6 @@ import {
 import ChatHistory from "./chatHistory";
 import Image from "next/image";
 
-
-
 const ChatSidebar = () => {
   return (
     <>
@@ -59,7 +57,7 @@ const ChatSidebar = () => {
                 New Chat
               </Button>
               <Sheet>
-                <SheetTrigger>
+                <SheetTrigger asChild>
                   <Button variant="ghost" className="w-52 flex justify-between">
                     History <ChevronRight />
                   </Button>
