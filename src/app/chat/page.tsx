@@ -5,8 +5,8 @@ import ChatSidebar from "@/components/ChatSidebar";
 const ChatSidePage = () => {
   return (
     <>
-      <div className=" h-screen w-full bg-[#fffff] flex items-center text-black  gap-2 ">
-        <div className=" h-screen w-full flex flex-col items-center">
+      <div className="h-screen w-full bg-[#fffff] flex items-center text-black gap-2 ">
+        <div className="h-screen w-full flex flex-col items-center pl-24">
           <div>
             <Image
               src="/download.jpeg"
@@ -21,8 +21,8 @@ const ChatSidePage = () => {
             <p>The strongest. Im the winner at everything.</p>
             <p>By name</p>
           </div>
+          <ChatSideFooter />
         </div>
-        <ChatSideFooter />
         <ChatSidebar />
       </div>
     </>

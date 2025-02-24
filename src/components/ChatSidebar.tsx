@@ -1,6 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Flag } from "lucide-react";
+import { ImageDown } from "lucide-react";
+import { SquarePen } from "lucide-react";
+import { ChevronRight } from "lucide-react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import ChatHistory from "./chatHistory";
 import Image from "next/image";
 
 const ChatSidebar = () => {
@@ -9,7 +21,7 @@ const ChatSidebar = () => {
       <div className="flex min-h-screen bg-gray-100 ">
         <Card className="w-64 shadow-lg border-0 rounded-none flex flex-col">
           <CardHeader>
-            <div className="flex gap-2 items-center">
+            <div className="flex gap-3 items-center">
               <Image
                 src="/download.jpeg"
                 alt="gojo"
@@ -17,23 +29,49 @@ const ChatSidebar = () => {
                 height={10}
                 className=" rounded-full"
               />
-              <div className="flex flex-col">
-                <p>Gojo Saturo</p>
-                <p className="text-[#666666]">by User name</p>
+              <div>
+                <div className="flex flex-col">
+                  <p>Gojo Saturo</p>
+                  <p className="text-[#666666]">by User name</p>
+                </div>
               </div>
-              <div></div>
             </div>
-            <CardTitle></CardTitle>
+            <CardTitle className="flex flex-col border-b">
+              <div className="flex m-2 justify-between ">
+                <div className="border p-2 rounded-full w-10 h-10 flex items-center justify-center hover:cursor-pointer">
+                  <ImageDown />
+                </div>
+                <div className="border p-2 rounded-full w-10 h-10  flex items-center justify-center hover:cursor-pointer">
+                  <Flag />
+                </div>
+              </div>
+              <p className="font-extralight text-xs text-gray-700 mb-2">
+                The strongest. I`m the winner at everything.
+              </p>
+            </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col justify-between flex-1">
             <div className="flex gap-2 flex-col">
-              <Button className="w-[70px] rounded-3xl">Create</Button>
-              <Button>Discover</Button>
-              <Input></Input>
-              <p className="text-gray-700">This week</p>
-              <a href="">Gojo</a>
+              <Button className="w-32 rounded-3xl h-10" variant="secondary">
+                <SquarePen />
+                New Chat
+              </Button>
+              <Sheet>
+                <SheetTrigger asChild>
+                  <Button variant="ghost" className="w-52 flex justify-between">
+                    History <ChevronRight />
+                  </Button>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>History</SheetTitle>
+                    <SheetDescription>
+                      <ChatHistory />
+                    </SheetDescription>
+                  </SheetHeader>
+                </SheetContent>
+              </Sheet>
             </div>
-            <Button className="">SignUp</Button>
           </CardContent>
         </Card>
       </div>
