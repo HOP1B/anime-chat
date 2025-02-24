@@ -1,13 +1,10 @@
 "use client";
-import { useSession } from "@clerk/nextjs";
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { Input } from "@/components/ui/input";
 
 const Panel = () => {
-  console.log(useSession());
   return (
     <div className="flex h-screen w-64 bg-gray-100 overflow-hidden">
       <Card className="w-full shadow-lg border-0 border-r-[1px] border-black rounded-none flex flex-col">
