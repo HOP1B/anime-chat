@@ -42,9 +42,8 @@ next-env.d.ts
 
 bun.lock
 bun.lockb
-package-lock.json
+packge-lock.json
 yarn.lock
 pnpm.lock
-
 # clerk configuration (can include secrets)
 /.clerk/
