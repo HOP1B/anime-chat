@@ -13,9 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  msg       String
-  createdAt DateTime @default(now())
+model User {
+  id       String @id @unique
+  name     String?
+  email    String @unique
+  image    String?
+  conversations Conversation[]
+}
+
+model Conversation {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  messages  Message[]
+  createdAt DateTime  @default(now())
+}
+
+model Message {
+  id             String       @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender         String       // "user" or "bot"
+  text           String       // Change from "content" to "text" if needed
+  createdAt      DateTime     @default(now())
 }
 
