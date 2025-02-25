@@ -6,10 +6,10 @@ const OLLAMA_API_URL = process.env.OLLAMA_API_URL!;
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { userId, prompt } = await req.json();
-    if (!userId || !prompt) {
+    const { userId, prompt, model } = await req.json();
+    if (!userId || !prompt || !model) {
       return NextResponse.json(
-        { error: "Missing userId or prompt" },
+        { error: "Missing userId, prompt, or model" },
         { status: 400 }
       );
     }
@@ -30,9 +30,12 @@ export const POST = async (req: NextRequest) => {
       conversation = await prisma.conversation.create({ data: { userId } });
     }
 
-    // Fetch all previous messages in this conversation
+    // Fetch all previous messages for the model
     const previousMessages = await prisma.message.findMany({
-      where: { conversationId: conversation.id },
+      where: {
+        conversationId: conversation.id,
+        model: model, // Fetch only the chat history for the specified model
+      },
       orderBy: { createdAt: "asc" }, // Oldest to newest
       select: { sender: true, text: true },
     });
@@ -48,7 +51,7 @@ export const POST = async (req: NextRequest) => {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "gojo",
+        model: model,
         prompt: chatHistory,
         stream: false,
       }),
@@ -61,13 +64,19 @@ export const POST = async (req: NextRequest) => {
 
     // Save messages to database
     await prisma.message.create({
-      data: { text: prompt, sender: "user", conversationId: conversation.id },
+      data: {
+        text: prompt,
+        sender: "user",
+        conversationId: conversation.id,
+        model: model,
+      },
     });
     await prisma.message.create({
       data: {
         text: botResponse,
         sender: "bot",
         conversationId: conversation.id,
+        model: model,
       },
     });
 
