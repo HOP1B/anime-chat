@@ -13,9 +13,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  msg       String
-  createdAt DateTime @default(now())
+model User {
+  id            String       @id @unique
+  name          String?
+  email         String       @unique
+  image         String?
+  conversations Conversation[] // Relation to Conversation model
 }
 
+model Conversation {
+  id        Int        @id @default(autoincrement()) // Auto-incrementing ID
+  userId    String     // Change userId to String to match User.id type
+  user      User       @relation(fields: [userId], references: [id]) // Relation to User model
+  messages  Message[]  // Relation to Message model
+}
+
+model Message {
+  id             Int      @id @default(autoincrement()) // Message ID
+  text           String
+  sender         String   // "user" or "bot"
+  conversationId Int      // This must match the type of Conversation's id
+  model          String   // Store the model name (Gojo, Akeno, etc.)
+  createdAt      DateTime @default(now()) // Created timestamp
+  
+  conversation   Conversation @relation(fields: [conversationId], references: [id]) // Relationship to Conversation
+}

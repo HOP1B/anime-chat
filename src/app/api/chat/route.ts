@@ -1,46 +1,91 @@
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
+const OLLAMA_API_URL = process.env.OLLAMA_API_URL!;
 
-export async function POST(req: Request) {
+export const POST = async (req: NextRequest) => {
   try {
-    // Ensure request body is valid
-    if (!req.body) {
+    const { userId, prompt, model } = await req.json();
+    if (!userId || !prompt || !model) {
       return NextResponse.json(
-        { error: "Empty request body" },
+        { error: "Missing userId, prompt, or model" },
         { status: 400 }
       );
     }
 
-    const body = await req.json();
-
-    if (!body.msg) {
-      return NextResponse.json(
-        { error: "Message (msg) is required" },
-        { status: 400 }
-      );
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+    if (!existingUser) {
+      return NextResponse.json({ error: "User not found" }, { status: 400 });
     }
 
-    // Store user message in the database
-    const message = await prisma.post.create({
-      data: { msg: body.msg },
+    // Find or create conversation
+    let conversation = await prisma.conversation.findFirst({
+      where: { userId },
+    });
+    if (!conversation) {
+      conversation = await prisma.conversation.create({ data: { userId } });
+    }
+
+    // Fetch all previous messages for the model
+    const previousMessages = await prisma.message.findMany({
+      where: {
+        conversationId: conversation.id,
+        model: model, // Fetch only the chat history for the specified model
+      },
+      orderBy: { createdAt: "asc" }, // Oldest to newest
+      select: { sender: true, text: true },
     });
 
-    // Simulated AI response (Replace with actual AI logic)
-    const aiResponse = `AI Response to: "${body.msg}"`;
+    // Format the conversation history as a chat log
+    let chatHistory = previousMessages
+      .map((msg) => `${msg.sender}: ${msg.text}`)
+      .join("\n");
+    chatHistory += `\nuser: ${prompt}`; // Append new user message
 
-    // Store AI response in the database
-    await prisma.post.create({
-      data: { msg: aiResponse },
+    // Send history to Ollama
+    const ollamaResponse = await fetch(OLLAMA_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: model,
+        prompt: chatHistory,
+        stream: false,
+      }),
     });
 
-    return NextResponse.json({ userMessage: message, aiResponse });
+    const ollamaData = await ollamaResponse.json();
+    console.log("Ollama Raw Response:", ollamaData);
+
+    const botResponse = ollamaData.response?.trim() || "No response from AI.";
+
+    // Save messages to database
+    await prisma.message.create({
+      data: {
+        text: prompt,
+        sender: "user",
+        conversationId: conversation.id,
+        model: model,
+      },
+    });
+    await prisma.message.create({
+      data: {
+        text: botResponse,
+        sender: "bot",
+        conversationId: conversation.id,
+        model: model,
+      },
+    });
+
+    return NextResponse.json({ response: botResponse }, { status: 200 });
   } catch (error) {
-    console.error("Prisma Error:", error);
+    console.error("Chat API Error:", error);
     return NextResponse.json(
-      { error: "Something went wrong." },
+      { error: "Internal Server Error" },
       { status: 500 }
     );
   }
-}
+};
