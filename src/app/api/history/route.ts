@@ -1,31 +1,33 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-// export default async function handler(
-//   req: NextApiRequest,
-//   res: NextApiResponse
-// ) {
-//   if (req.method !== "GET") {
-//     return res.status(405).json({ error: "Method not allowed" });
-//   }
+export const GET = async (req: NextRequest) => {
+  try {
+    const url = new URL(req.nextUrl);
+    const userId = url.searchParams.get("userId");
+    const model = url.searchParams.get("model");
 
-//   const { userId } = req.query;
-//   if (!userId) {
-//     return res.status(400).json({ error: "Missing userId" });
-//   }
+    if (!userId) {
+      return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+    }
 
-//   try {
-//     const conversations = await prisma.conversation.findMany({
-//       where: { userId: userId as string },
-//       include: { messages: true },
-//     });
+    const conversations = await prisma.conversation.findMany({
+      where: { userId },
+      include: {
+        messages: model
+          ? { where: { model } } // ✅ Filter messages in DB
+          : true, // Fetch all messages if no model is provided
+      },
+    });
 
-//     res.json({ conversations });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// }
+    return NextResponse.json({ conversations }, { status: 200 });
+  } catch (error) {
+    console.error("Error:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+};

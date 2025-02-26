@@ -60,23 +60,42 @@ export const POST = async (req: NextRequest) => {
     const ollamaData = await ollamaResponse.json();
     console.log("Ollama Raw Response:", ollamaData);
 
+    // Check if Ollama returned an error about the model
+    if (ollamaData.error && ollamaData.error.includes("model")) {
+      return NextResponse.json({ error: ollamaData.error }, { status: 400 });
+    }
+
     const botResponse = ollamaData.response?.trim() || "No response from AI.";
 
-    // Save messages to database
+    // ✅ Only create the model entry if we get a valid response from Ollama
+    let existingModel = await prisma.model.findUnique({
+      where: { name: model },
+    });
+
+    if (!existingModel) {
+      existingModel = await prisma.model.create({
+        data: { name: model },
+      });
+    }
+
+    // ✅ Save messages only if the model exists (ensures valid model)
     await prisma.message.create({
       data: {
         text: prompt,
         sender: "user",
         conversationId: conversation.id,
         model: model,
+        modelName: existingModel.name, // This will never save if model was invalid
       },
     });
+
     await prisma.message.create({
       data: {
         text: botResponse,
         sender: "bot",
         conversationId: conversation.id,
         model: model,
+        modelName: existingModel.name,
       },
     });
 

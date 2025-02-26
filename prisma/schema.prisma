@@ -37,4 +37,14 @@ model Message {
   createdAt      DateTime @default(now()) // Created timestamp
   
   conversation   Conversation @relation(fields: [conversationId], references: [id]) // Relationship to Conversation
+  modelName      String         // Optional foreign key to Model
+  Model          Model       @relation(fields: [modelName], references: [name]) // Optional relationship to Model
+}
+
+model Model {
+  id        Int        @id @default(autoincrement()) // Auto-incrementing ID
+  name      String     @unique
+  messages  Message[]  // Relation to Message model
+  imageUrl  String?
+  createdAt DateTime   @default(now()) // Created timestamp`
 }
