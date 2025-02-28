@@ -1,8 +1,18 @@
+"use client";
 import Image from "next/image";
 import ChatSideFooter from "../../components/ChatFooter";
 import ChatSidebar from "@/components/ChatSidebar";
+// import { useSession } from "@clerk/nextjs";
+// import { useParams } from "next/navigation";
 
 const ChatSidePage = () => {
+  // const { session } = useSession();
+  // const { modelName } = useParams();
+  // const chatHistory = await fetch(
+  //   `/api/history?userId=${session?.user.id}&model=${modelName}`,
+  //   {}
+  // );
+
   return (
     <>
       <div className="h-screen w-full bg-[#fffff] flex items-center text-black gap-2 ">

@@ -17,14 +17,14 @@ export const GET = async (req: NextRequest) => {
       where: { userId },
       include: {
         messages: model
-          ? { where: { model } } // ✅ Filter messages in DB
-          : true, // Fetch all messages if no model is provided
+          ? { where: { model } } // ✅ Fetch only messages for the given model
+          : true, // ✅ Fetch all messages if no model is provided
       },
     });
 
     return NextResponse.json({ conversations }, { status: 200 });
   } catch (error) {
-    console.error("Error:", error);
+    console.error("API History Error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
