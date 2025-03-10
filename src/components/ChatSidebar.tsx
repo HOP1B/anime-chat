@@ -14,7 +14,13 @@ import {
 } from "@/components/ui/sheet";
 import Image from "next/image";
 
-const ChatSidebar = () => {
+interface CharacterPanelProps {
+  name: string;
+  img: string;
+  description: string;
+}
+
+const ChatSidebar = ({name, img, description}: CharacterPanelProps) => {
   return (
     <>
       <div className="flex min-h-screen bg-gray-100 ">
@@ -22,7 +28,7 @@ const ChatSidebar = () => {
           <CardHeader>
             <div className="flex gap-3 items-center">
               <Image
-                src="/download.jpeg"
+                src={img}
                 alt="gojo"
                 width={80}
                 height={10}
@@ -30,7 +36,7 @@ const ChatSidebar = () => {
               />
               <div>
                 <div className="flex flex-col">
-                  <p>Gojo Saturo</p>
+                  <p>{name}</p>
                   <p className="text-[#666666]">by User name</p>
                 </div>
               </div>
@@ -45,7 +51,7 @@ const ChatSidebar = () => {
                 </div>
               </div>
               <p className="font-extralight text-xs text-gray-700 mb-2">
-                The strongest. I`m the winner at everything.
+                {description}
               </p>
             </CardTitle>
           </CardHeader>
@@ -64,8 +70,7 @@ const ChatSidebar = () => {
                 <SheetContent>
                   <SheetHeader>
                     <SheetTitle>History</SheetTitle>
-                    <SheetDescription>
-                    </SheetDescription>
+                    <SheetDescription></SheetDescription>
                   </SheetHeader>
                 </SheetContent>
               </Sheet>

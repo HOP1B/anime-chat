@@ -52,7 +52,9 @@ const Panel = () => {
     <div className="flex h-screen w-64 bg-gray-100 overflow-hidden z-50 fixed">
       <Card className="w-full shadow-lg border-0 border-r-[1px] border-black rounded-none flex flex-col">
         <CardHeader>
-          <CardTitle>Anime-chat.Ai</CardTitle>
+          <CardTitle>
+            <a href="http://localhost:3000">Anime-chat.Ai</a>
+          </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col justify-between flex-1 overflow-hidden">
           <div className="flex gap-2 flex-col">
@@ -60,7 +62,9 @@ const Panel = () => {
             <Button>Discover</Button>
             <Input placeholder="Search..." />
             <p className="text-gray-700">This week</p>
-            <a href="">Gojo</a>
+            <a href="http://localhost:3000/chat/Gojo">Gojo</a>
+            <a href="http://localhost:3000/chat/ZeroTwo">Zero Two</a>
+            <a href="http://localhost:3000/chat/akenoo">Akeno Himejima</a>
           </div>
           <SignedOut>
             <SignUpButton />
