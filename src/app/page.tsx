@@ -21,9 +21,24 @@ const Home = () => {
       <p className="mt-20">For you</p>
       <div className="flex gap-5 overflow-x-auto fixed">
         {" "}
-        <CharacterPanel name="Gojo Saturo" img="/gojo-pic2.jpeg" />
-        <CharacterPanel name="Zero Two" img="/ZeroTwo.jpeg" />
-        <CharacterPanel name="Akeno" img="/akeno.jpeg" />{" "}
+        <CharacterPanel
+          name="Gojo Saturo"
+          img="/gojo-pic2.jpeg"
+          href="/chat/Gojo"
+          description="The strongest. Im the winner at everything."
+        />
+        <CharacterPanel
+          name="Zero Two"
+          img="/ZeroTwo.jpeg"
+          href="/chat/ZeroTwo"
+          description="I`m Zero Two from Darling In The Franxx"
+        />
+        <CharacterPanel
+          name="Akeno"
+          img="/akeno.jpeg"
+          href="/chat/akenoo "
+          description="Priestess of Thunder and Lightning"
+        />{" "}
       </div>
     </div>
   );
