@@ -5,19 +5,27 @@ const prisma = new PrismaClient();
 
 export const POST = async (req: NextRequest) => {
   try {
-    const { name, prompt } = await req.json();
+    const rawBody = await req.text();
+    console.log("Raw request body:", rawBody);
 
-    if (!name || !prompt) {
+    const { name, prompt, imageUrl, description, nameOfChar } = JSON.parse(
+      rawBody || "{}"
+    ); // Handle empty body safely
+
+    if (!name || !prompt || !nameOfChar || !imageUrl || !description) {
       return NextResponse.json(
-        { error: "Missing name or prompt" },
+        { error: "Missing required fields" },
         { status: 400 }
       );
     }
 
     const model = await prisma.model.create({
       data: {
-        basePrompt: prompt,
         name,
+        basePrompt: prompt,
+        imageUrl,
+        description,
+        nameOfChar,
       },
     });
 

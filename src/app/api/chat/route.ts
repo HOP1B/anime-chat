@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.API_KEY!);
@@ -29,70 +29,56 @@ export const POST = async (req: NextRequest) => {
     }
 
     // Fetch model
-    const model = await prisma.model.findFirst({ where: { name: modelName } });
+    const model = await prisma.model.findUnique({ where: { name: modelName } });
     if (!model) {
       return NextResponse.json({ error: "Model not found!" }, { status: 404 });
     }
 
-    let conversation;
-    let chatSession: ChatSession;
+    let conversation = await prisma.conversation.findFirst({
+      where: { modelId: model.id, userId },
+      include: { messages: { orderBy: { createdAt: "asc" } } },
+    });
 
-    try {
-      conversation = await prisma.conversation.findFirst({
-        where: { modelId: model.id, userId },
+    if (!conversation) {
+      conversation = await prisma.conversation.create({
+        data: {
+          user: { connect: { id: userId } },
+          model: { connect: { id: model.id } },
+          messages: {
+            create: [
+              { role: "user", text: model.basePrompt, modelId: model.id },
+            ],
+          },
+        },
         include: { messages: { orderBy: { createdAt: "asc" } } },
       });
-
-      if (!conversation) {
-        conversation = await prisma.conversation.create({
-          data: {
-            userId,
-            model: { connect: { id: model.id } },
-            messages: {
-              create: [{ role: "user", text: model.basePrompt }],
-            }, // ✅ Ensure first message is user
-          },
-          include: { messages: true },
-        });
-      }
-
-      // Map previous messages for history
-      const history = conversation.messages.map((message) => ({
-        role: message.role,
-        parts: [{ text: message.text }],
-      }));
-
-      // Ensure the conversation starts with a "user" role
-      if (history.length === 0 || history[0].role !== "user") {
-        history.unshift({ role: "user", parts: [{ text: model.basePrompt }] }); // ✅ Fix first message role
-      }
-
-      // Initialize chat session
-      chatSession = ai.startChat({
-        generationConfig,
-        history,
-      });
-    } catch (dbError) {
-      console.error("Database error:", dbError);
-      return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
+
+    // Format history correctly
+    const history = conversation.messages.map((msg) => ({
+      role: msg.role === "model" ? "model" : "user",
+      parts: [{ text: msg.text }],
+    }));
+
+    if (history.length === 0 || history[0].role !== "user") {
+      history.unshift({ role: "user", parts: [{ text: model.basePrompt }] });
+    }
+
+    // Initialize chat session
+    const chatSession = ai.startChat({
+      generationConfig,
+      history,
+    });
 
     // Save user message
-    try {
-      await prisma.message.create({
-        data: {
-          role: "user",
-          conversation: { connect: { id: conversation.id } },
-          text: prompt,
-        },
-      });
-    } catch (messageError) {
-      console.error("Error saving user message:", messageError);
-      return NextResponse.json(
-        { error: "Failed to save message" },
-        { status: 500 }
-      );
-    }
+    await prisma.message.create({
+      data: {
+        role: "user",
+        conversation: { connect: { id: conversation.id } },
+        model: { connect: { id: model.id } },
+        text: prompt,
+      },
+    });
 
     // Get AI response
     let text = "";
@@ -109,21 +95,14 @@ export const POST = async (req: NextRequest) => {
     }
 
     // Save AI response
-    try {
-      await prisma.message.create({
-        data: {
-          role: "model",
-          conversation: { connect: { id: conversation.id } },
-          text,
-        },
-      });
-    } catch (messageError) {
-      console.error("Error saving AI response:", messageError);
-      return NextResponse.json(
-        { error: "Failed to save AI response" },
-        { status: 500 }
-      );
-    }
+    await prisma.message.create({
+      data: {
+        role: "model",
+        conversation: { connect: { id: conversation.id } },
+        model: { connect: { id: model.id } },
+        text,
+      },
+    });
 
     return NextResponse.json({ text, chatSession });
   } catch (error) {

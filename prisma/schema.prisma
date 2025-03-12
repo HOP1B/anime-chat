@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,38 +7,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Model {
-  id           String         @id @default(nanoid())
-  name         String         @unique
-  basePrompt   String
-  Conversation Conversation[]
+model User {
+  id            String         @id @unique @default(uuid()) 
+  name          String?
+  email         String         @unique
+  image         String?
+  conversations Conversation[] 
 }
 
 model Conversation {
-  id       String    @id @default(nanoid())
-  userId   String
-  modelId  String
-  model    Model     @relation(fields: [modelId], references: [id])
-  messages Message[]
-}
-
-enum Role {
-  user
-  model
+  id        String     @id @unique @default(uuid()) 
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  modelId   String
+  model     Model      @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  messages  Message[]  
+  createdAt DateTime   @default(now())
 }
 
 model Message {
-  id             String       @id @default(nanoid())
-  conversationId String
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
-  role           Role
+  id             String     @id @unique @default(uuid()) 
   text           String
-  createdAt      DateTime     @default(now())
+  role           String     
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  modelId        String
+  model          Model      @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  createdAt      DateTime   @default(now())
 }
 
-model User {
-  id        String @id @unique
-  email     String @unique
-  name      String
-  image     String
+model Model {
+  id           String         @id @unique @default(uuid()) 
+  name         String         @unique
+  basePrompt   String
+  description  String      
+  nameOfChar   String        
+  imageUrl     String         
+  messages     Message[]  
+  conversations Conversation[]
+  createdAt    DateTime       @default(now())
 }
