@@ -54,7 +54,6 @@ export const POST = async (req: NextRequest) => {
       });
     }
 
-    // Format history correctly
     const history = conversation.messages.map((msg) => ({
       role: msg.role === "model" ? "model" : "user",
       parts: [{ text: msg.text }],
@@ -64,13 +63,11 @@ export const POST = async (req: NextRequest) => {
       history.unshift({ role: "user", parts: [{ text: model.basePrompt }] });
     }
 
-    // Initialize chat session
     const chatSession = ai.startChat({
       generationConfig,
       history,
     });
 
-    // Save user message
     await prisma.message.create({
       data: {
         role: "user",
