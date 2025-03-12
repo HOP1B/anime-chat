@@ -4,7 +4,16 @@ import { ChatSession, GoogleGenerativeAI } from "@google/generative-ai";
 
 const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.API_KEY!);
-const ai = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const ai = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+
+// Extracted generation config
+const generationConfig = {
+  temperature: 0.95,
+  topP: 0.95,
+  topK: 40,
+  maxOutputTokens: 8192,
+  responseMimeType: "text/plain",
+};
 
 export const POST = async (req: NextRequest) => {
   try {
@@ -35,43 +44,34 @@ export const POST = async (req: NextRequest) => {
       });
 
       if (!conversation) {
-        // Create new conversation
         conversation = await prisma.conversation.create({
           data: {
             userId,
             model: { connect: { id: model.id } },
-            messages: { create: [{ role: "model", text: model.basePrompt }] }, // System prompt
+            messages: {
+              create: [{ role: "user", text: model.basePrompt }],
+            }, // ✅ Ensure first message is user
           },
           include: { messages: true },
         });
-
-        chatSession = ai.startChat({
-          generationConfig: {
-            temperature: 0.95,
-            topP: 0.95,
-            topK: 40,
-            maxOutputTokens: 8192,
-            responseMimeType: "text/plain",
-          },
-          history: [{ role: "user", parts: [{ text: model.basePrompt }] }], // Ensure proper first message
-        });
-      } else {
-        const history = conversation.messages.map((message) => ({
-          role: message.role === "model" ? "user" : message.role, // Ensure correct role mapping
-          parts: [{ text: message.text }],
-        }));
-
-        chatSession = ai.startChat({
-          generationConfig: {
-            temperature: 0.95,
-            topP: 0.95,
-            topK: 40,
-            maxOutputTokens: 8192,
-            responseMimeType: "text/plain",
-          },
-          history,
-        });
       }
+
+      // Map previous messages for history
+      const history = conversation.messages.map((message) => ({
+        role: message.role,
+        parts: [{ text: message.text }],
+      }));
+
+      // Ensure the conversation starts with a "user" role
+      if (history.length === 0 || history[0].role !== "user") {
+        history.unshift({ role: "user", parts: [{ text: model.basePrompt }] }); // ✅ Fix first message role
+      }
+
+      // Initialize chat session
+      chatSession = ai.startChat({
+        generationConfig,
+        history,
+      });
     } catch (dbError) {
       console.error("Database error:", dbError);
       return NextResponse.json({ error: "Database error" }, { status: 500 });
@@ -99,7 +99,7 @@ export const POST = async (req: NextRequest) => {
     try {
       const result = await chatSession.sendMessage(prompt);
       const response = await result.response;
-      text = await response.text(); // Await properly
+      text = await response.text();
     } catch (aiError) {
       console.error("AI error:", aiError);
       return NextResponse.json(
@@ -112,7 +112,7 @@ export const POST = async (req: NextRequest) => {
     try {
       await prisma.message.create({
         data: {
-          role: "model", // Correct role for AI responses
+          role: "model",
           conversation: { connect: { id: conversation.id } },
           text,
         },
@@ -125,7 +125,7 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    return NextResponse.json({ text });
+    return NextResponse.json({ text, chatSession });
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
