@@ -6,7 +6,6 @@ const prisma = new PrismaClient();
 const genAI = new GoogleGenerativeAI(process.env.API_KEY!);
 const ai = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
-// Extracted generation config
 const generationConfig = {
   temperature: 0.95,
   topP: 0.95,
@@ -18,8 +17,6 @@ const generationConfig = {
 export const POST = async (req: NextRequest) => {
   try {
     const { userId, prompt, modelName } = await req.json();
-
-    // Check if user exists
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) {
       return NextResponse.json(
@@ -28,7 +25,6 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Fetch model
     const model = await prisma.model.findUnique({ where: { name: modelName } });
     if (!model) {
       return NextResponse.json({ error: "Model not found!" }, { status: 404 });
@@ -91,7 +87,6 @@ export const POST = async (req: NextRequest) => {
       );
     }
 
-    // Save AI response
     await prisma.message.create({
       data: {
         role: "model",
@@ -101,7 +96,66 @@ export const POST = async (req: NextRequest) => {
       },
     });
 
-    return NextResponse.json({ text, chatSession });
+    return NextResponse.json({ text, history });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+};
+
+export const GET = async (req: NextRequest) => {
+  try {
+    const url = new URL(req.url);
+    const searchParams = url.searchParams;
+    const userId = searchParams.get("userId")!;
+    const modelName = searchParams.get("modelName")!;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not registered. Access denied." },
+        { status: 403 }
+      );
+    }
+
+    const model = await prisma.model.findUnique({ where: { name: modelName } });
+    if (!model) {
+      return NextResponse.json({ error: "Model not found!" }, { status: 404 });
+    }
+
+    let conversation = await prisma.conversation.findFirst({
+      where: { modelId: model.id, userId },
+      include: { messages: { orderBy: { createdAt: "asc" } } },
+    });
+
+    if (!conversation) {
+      conversation = await prisma.conversation.create({
+        data: {
+          user: { connect: { id: userId } },
+          model: { connect: { id: model.id } },
+          messages: {
+            create: [
+              { role: "user", text: model.basePrompt, modelId: model.id },
+            ],
+          },
+        },
+        include: { messages: { orderBy: { createdAt: "asc" } } },
+      });
+    }
+
+    const history = conversation.messages.map((msg) => ({
+      role: msg.role === "model" ? "model" : "user",
+      parts: [{ text: msg.text }],
+    }));
+
+    if (history.length === 0 || history[0].role !== "user") {
+      history.unshift({ role: "user", parts: [{ text: model.basePrompt }] });
+    }
+
+    return NextResponse.json({ history, conversationId: conversation.id });
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(

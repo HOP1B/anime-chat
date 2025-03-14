@@ -38,3 +38,8 @@ export const POST = async (req: NextRequest) => {
     );
   }
 };
+
+export const GET = async () => {
+  const models = await prisma.model.findMany();
+  return NextResponse.json(models);
+};

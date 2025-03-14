@@ -1,5 +1,5 @@
 import Image from "next/image";
-import ChatSideFooter from "../../../components/ChatFooter";
+import ChatSideFooter from "@/components/ChatFooter";
 import ChatSidebar from "@/components/ChatSidebar";
 
 const ChatSidePage = () => {
@@ -9,23 +9,23 @@ const ChatSidePage = () => {
         <div className="h-screen w-full flex flex-col items-center pl-24">
           <div>
             <Image
-              src="/ZeroTwo.jpeg"
+              src="/akeno.jpeg"
               alt="gojo"
               width={80}
               height={10}
-              className=" rounded-full mt-32"
+              className="rounded-full mt-32"
             />
-            <p>Zero Two</p>
+            <p>Akeno Himejima</p>
           </div>
           <div className="text-[#666666] flex flex-col items-center">
-            <p>I`m Zero Two from Darling In The Franxx</p>
+            <p>Priestess of Thunder and Lightning</p>
           </div>
-          <ChatSideFooter name="Message Zero Two..." />
+          <ChatSideFooter name="Message Akeno Himejima..." />
         </div>
         <ChatSidebar
-          name="Zero Two"
-          img="/ZeroTwo.jpeg"
-          description="I'm Zero Two from Darling In The Franxx"
+          name="Akeno Himejima"
+          img="/akeno.jpeg"
+          description="Priestess of Thunder and Lightning"
         />
       </div>
     </>

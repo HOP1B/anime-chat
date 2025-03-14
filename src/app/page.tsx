@@ -1,14 +1,19 @@
+"use client";
+
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import CharacterPanel from "@/components/charaterPanel"; 
+import CharacterPanel from "@/components/characterPanel";
+import { useSession } from "@clerk/nextjs";
 
 const Home = () => {
+  const { session } = useSession();
+
   return (
     <div className="h-screen mx-96 pt-10">
       <div className="flex text-gray-500 justify-between">
         <div>
           <p>Welcome back,</p>
-          <p>user</p>
+          <p>{session?.user.username}</p>
         </div>
         <div className="relative inline-flex items-center">
           <Input
@@ -20,25 +25,7 @@ const Home = () => {
       </div>
       <p className="mt-20">For you</p>
       <div className="flex gap-5 overflow-x-auto fixed">
-        {" "}
-        <CharacterPanel
-          name="Gojo Saturo"
-          img="/gojo-pic2.jpeg"
-          href="/chat/Gojo"
-          description="The strongest. Im the winner at everything."
-        />
-        <CharacterPanel
-          name="Zero Two"
-          img="/ZeroTwo.jpeg"
-          href="/chat/ZeroTwo"
-          description="I`m Zero Two from Darling In The Franxx"
-        />
-        <CharacterPanel
-          name="Akeno Himejima"
-          img="/akenoReal.jpeg"
-          href="/chat/akenoo "
-          description="Priestess of Thunder and Lightning"
-        />{" "}
+        <CharacterPanel />
       </div>
     </div>
   );
