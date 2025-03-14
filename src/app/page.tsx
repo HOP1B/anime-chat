@@ -34,8 +34,8 @@ const Home = () => {
           description="I`m Zero Two from Darling In The Franxx"
         />
         <CharacterPanel
-          name="Akeno"
-          img="/akeno.jpeg"
+          name="Akeno Himejima"
+          img="/akenoReal.jpeg"
           href="/chat/akenoo "
           description="Priestess of Thunder and Lightning"
         />{" "}
