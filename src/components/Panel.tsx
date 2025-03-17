@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Plus } from "lucide-react";
 import { Compass } from "lucide-react";
 import { Search } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 type UserData = {
   name: string | null;
@@ -55,42 +57,63 @@ const Panel = () => {
       <Card className="w-full shadow-lg border-0 border-r-[1px] border-black rounded-none flex flex-col">
         <CardHeader>
           <CardTitle>
-            <a href="http://localhost:3000">Anime-chat.Ai</a>
+            <Link href="http://localhost:3001">Anime-chat.Ai</Link>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col justify-between flex-1 overflow-hidden">
           <div className="flex gap-2 flex-col">
-            <Button className="w-[90px] rounded-3xl bg-gray-100 text-black pl-10">
+            <Button className="w-[90px] rounded-3xl bg-gray-100 text-black pl-10 hover:bg-gray-200">
               Create
               <Plus className="absolute left-9" />
             </Button>
-            <Button className="bg-gray-100 text-black ">
+            <Button className="bg-gray-100 text-black hover:bg-gray-200 ">
               <Compass className="absolute left-9" />
               Discover
             </Button>
             <div className="relative">
-              <Input placeholder="Search..." className="pl-10 bg-gray-100" />
+              <Input placeholder="Search..." className="pl-10 bg-gray-100 focus:outline-none" />
               <Search className="w-4 absolute top-[6px] left-2" />
             </div>
             <p className="text-gray-700 my-4">This week</p>
-            <a
+            <Link
               href="http://localhost:3000/chat/Gojo"
-              className="border py-1 px-2 rounded"
+              className="py-1 px-2 rounded-2xl flex items-center gap-3 w-22 h-14 hover:bg-gray-200"
             >
+              <Image
+                src="/gojo-pic2.jpeg"
+                alt="gojo"
+                width={40}
+                height={20}
+                className="rounded-full"
+              />
               Gojo Saturo
-            </a>
-            <a
+            </Link>
+            <Link
               href="http://localhost:3000/chat/ZeroTwo"
-              className="border py-1 px-2 rounded"
+              className="py-1 px-2 rounded-2xl flex items-center gap-3 w-22 h-14 hover:bg-gray-200"
             >
+              <Image
+                src="/ZeroTwo.jpeg"
+                alt="gojo"
+                width={40}
+                height={20}
+                className="rounded-full"
+              />
               Zero Two
-            </a>
-            <a
+            </Link>
+            <Link
               href="http://localhost:3000/chat/akenoo"
-              className="border py-1 px-2 rounded"
+              className="py-1 px-2 rounded-2xl flex items-center gap-3 w-22 h-14 hover:bg-gray-200"
             >
+              <Image
+                src="/akenoReal.jpeg"
+                alt="gojo"
+                width={40}
+                height={20}
+                className="rounded-full"
+              />
               Akeno Himejima
-            </a>
+            </Link>
           </div>
           <SignedOut>
             <div className="flex justify-center border bg-gray-100 rounded-full p-2">

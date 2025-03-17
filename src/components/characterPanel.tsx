@@ -3,7 +3,7 @@ import axios from "axios";
 import CharacterCard from "@/components/characterCard";
 
 const CharacterPanel = () => {
-  const [models, setModels] = useState([]); // Store fetched models
+  const [models, setModels] = useState([]);
 
   useEffect(() => {
     const fetchModels = async () => {
