@@ -10,7 +10,7 @@ const ChatSidePage = () => {
           <div>
             <Image
               src="/akeno.jpeg"
-              alt="gojo"
+              alt="Akeno Himejima"
               width={80}
               height={10}
               className="rounded-full mt-32"
