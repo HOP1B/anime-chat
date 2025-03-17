@@ -57,7 +57,7 @@ const Panel = () => {
       <Card className="w-full shadow-lg border-0 border-r-[1px] border-black rounded-none flex flex-col">
         <CardHeader>
           <CardTitle>
-            <Link href="http://localhost:3001">Anime-chat.Ai</Link>
+            <Link href="http://localhost:3000">Anime-chat.Ai</Link>
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col justify-between flex-1 overflow-hidden">
@@ -71,7 +71,10 @@ const Panel = () => {
               Discover
             </Button>
             <div className="relative">
-              <Input placeholder="Search..." className="pl-10 bg-gray-100 focus:outline-none" />
+              <Input
+                placeholder="Search..."
+                className="pl-10 bg-gray-100 focus:outline-none"
+              />
               <Search className="w-4 absolute top-[6px] left-2" />
             </div>
             <p className="text-gray-700 my-4">This week</p>

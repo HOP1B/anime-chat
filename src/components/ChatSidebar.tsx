@@ -13,14 +13,9 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import Image from "next/image";
+import { CharacterPanelProps } from "@/lib/types";
 
-interface CharacterPanelProps {
-  name: string;
-  img: string;
-  description: string;
-}
-
-const ChatSidebar = ({name, img, description}: CharacterPanelProps) => {
+const ChatSidebar = ({ name, img, description }: CharacterPanelProps) => {
   return (
     <>
       <div className="flex min-h-screen bg-gray-100 ">

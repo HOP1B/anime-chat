@@ -3,20 +3,19 @@ import Link from "next/link";
 import { useSession } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { ModelType } from "@/lib/types";
 
-type Props = {
-  name?: string;
-  img: string;
-  description: string;
-  nameOfChar: string;
-};
-
-const CharacterCard = ({ name, img, description, nameOfChar }: Props) => {
+const CharacterCard = ({
+  name,
+  imageUrl,
+  description,
+  nameOfChar,
+}: ModelType) => {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const session = useSession();
-  const userId = session.session?.user.id;
   useEffect(() => {
     const fetchConversationId = async () => {
+      const userId = await session.session?.user.id;
       try {
         const response = await axios.get(
           `/api/chat?userId=${userId}&modelName=${name}`
@@ -30,7 +29,7 @@ const CharacterCard = ({ name, img, description, nameOfChar }: Props) => {
     };
 
     fetchConversationId();
-  }, [name, userId]);
+  }, [name, session]);
 
   const href = `/chat/${conversationId}`;
 
@@ -40,7 +39,7 @@ const CharacterCard = ({ name, img, description, nameOfChar }: Props) => {
         <div className="flex p-4">
           <div className="flex">
             <Image
-              src={img}
+              src={imageUrl}
               alt={`${name} image`}
               width={114}
               height={200}

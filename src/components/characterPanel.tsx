@@ -32,7 +32,7 @@ const CharacterPanel = () => {
             key={model.id}
             name={model.name}
             nameOfChar={model.nameOfChar}
-            img={model.imageUrl}
+            imageUrl={model.imageUrl}
             description={model.description}
           />
         )
