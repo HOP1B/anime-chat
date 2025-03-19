@@ -1,82 +1,88 @@
 "use client";
 
 import Image from "next/image";
-import ChatSideFooter from "@/components/ChatFooter";
 import ChatSidebar from "@/components/ChatSidebar";
-import { useSession } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { ModelType } from "@/lib/types";
-import { useParams } from "next/navigation";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { SendHorizontal } from "lucide-react";
+import { useChatStore } from "@/lib/hooks/useChatStore";
+import { CharacterPanelProps } from "@/lib/types";
+import ChatHistoryPage from "@/components/Message";
 
 const ChatSidePage = () => {
-  const session = useSession();
-  const { id: conversationId } = useParams();
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [history, setHistory] = useState<string | null>(null);
-  const [model, setModel] = useState<ModelType | null>(null);
+  const { model, history, sendMessage, isLoading } = useChatStore();
+  const [inputValue, setInputValue] = useState("");
 
-  useEffect(() => {
-    if (!conversationId) return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
 
-    const fetchModel = async () => {
-      try {
-        const res = await axios.get(
-          `/api/chat?conversationId=${conversationId}`
-        );
-        setModel(res.data.conversation.model);
-      } catch (error) {
-        console.error("Error fetching model:", error);
-      }
-    };
-    fetchModel();
-  }, [conversationId]);
+  const handleSubmit = () => {
+    if (inputValue.trim().length < 2) return;
+    sendMessage(inputValue);
+    setInputValue("");
+  };
 
-  useEffect(() => {
-    const fetchConversationId = async () => {
-      const userId = session.session?.user.id;
-      if (!userId || !model?.name) return;
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
 
-      try {
-        const response = await axios.get(
-          `/api/chat?userId=${userId}&modelName=${model.name}`
-        );
-        if (response.data?.history) {
-          setHistory(response.data.history);
-        }
-      } catch (error) {
-        console.error("Error fetching conversation ID:", error);
-      }
-    };
-
-    fetchConversationId();
-  }, [session.session?.user.id, model, conversationId]);
+  // Prepare props for ChatSidebar component
+  const sidebarProps: CharacterPanelProps = {
+    name: model?.nameOfChar || "Unknown",
+    img: model?.imageUrl || "/asd.jpg",
+    description: model?.description || "Ready",
+  };
 
   return (
     <>
-      <div className="h-screen w-full bg-[#fffff] flex items-center text-black gap-2 ">
+      <div className="h-screen w-full bg-[#ffffff] flex items-center text-black gap-2">
         <div className="h-screen w-full flex flex-col items-center pl-24">
           <div>
             <Image
               src={model?.imageUrl || "/asd.jpg"}
-              alt="ZeroTwo"
+              alt={model?.nameOfChar || "AI Character"}
               width={80}
               height={10}
               className="rounded-full mt-32"
             />
-            <p>{model?.nameOfChar}</p>
+            <p className="text-center mt-2 font-medium">{model?.nameOfChar}</p>
+            <p className="text-center max-w-md mt-2">{model?.description}</p>
           </div>
+          <ChatHistoryPage></ChatHistoryPage>
           <div className="text-[#666666] flex flex-col items-center">
-            <p>{model?.description}</p>
+            <div className="flex justify-center">
+              <div className="fixed bottom-4 p-2">
+                <Input
+                  className="rounded-full bg-gray-100 w-[600px] h-11 relative focus:outline-none"
+                  placeholder={`Message to ${model?.nameOfChar || "AI"}`}
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyPress}
+                  disabled={isLoading}
+                />
+                <Button
+                  className="rounded-full absolute bottom-3 right-3"
+                  onClick={handleSubmit}
+                  disabled={isLoading || inputValue.trim().length < 2}
+                >
+                  <SendHorizontal />
+                </Button>
+              </div>
+            </div>
           </div>
-          <ChatSideFooter name="Message Akeno Himejima..." />
         </div>
         <ChatSidebar
-          name={model?.nameOfChar || ""}
-          img={model?.imageUrl || ""}
-          description={model?.description || ""}
+          name={sidebarProps.name}
+          img={sidebarProps.img}
+          description={sidebarProps.description}
         />
-      </div>x
+      </div>
     </>
   );
 };

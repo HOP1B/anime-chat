@@ -15,8 +15,9 @@ const CharacterCard = ({
   const session = useSession();
   useEffect(() => {
     const fetchConversationId = async () => {
-      const userId = await session.session?.user.id;
       try {
+        const userId = await session.session?.user.id;
+
         const response = await axios.get(
           `/api/chat?userId=${userId}&modelName=${name}`
         );
@@ -32,6 +33,9 @@ const CharacterCard = ({
   }, [name, session]);
 
   const href = `/chat/${conversationId}`;
+  if (conversationId === null) {
+    return 0;
+  }
 
   return (
     <Link href={href} className="block">

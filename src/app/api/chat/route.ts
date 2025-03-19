@@ -103,7 +103,7 @@ export const POST = async (req: NextRequest) => {
       },
     });
 
-    return NextResponse.json({ text, history });
+    return NextResponse.json({ text, conversationId: conversation.id });
   } catch (error) {
     console.error("Error processing request:", error);
     return NextResponse.json(
@@ -121,6 +121,7 @@ export const GET = async (req: NextRequest) => {
     const userId = searchParams.get("userId");
     const modelName = searchParams.get("modelName");
 
+    // If conversationId is provided, return that specific conversation
     if (conversationId) {
       const conversation = await prisma.conversation.findUnique({
         where: { id: conversationId },
@@ -137,6 +138,7 @@ export const GET = async (req: NextRequest) => {
       return NextResponse.json({ conversation });
     }
 
+    // If userId and modelName are provided but no conversationId
     if (userId && modelName) {
       const user = await prisma.user.findUnique({ where: { id: userId } });
       if (!user) {
@@ -156,12 +158,23 @@ export const GET = async (req: NextRequest) => {
         );
       }
 
-      let conversation = await prisma.conversation.findFirst({
-        where: { modelId: model.id, userId },
-        include: { messages: { orderBy: { createdAt: "asc" } }, model: true },
+      // Check if there are any existing conversations for this user/model
+      const existingConversations = await prisma.conversation.findMany({
+        where: { userId, modelId: model.id },
+        orderBy: { createdAt: "desc" },
+        take: 1,
       });
 
-      if (!conversation) {
+      let conversation;
+
+      if (existingConversations.length > 0) {
+        // Use the most recent conversation if it exists
+        conversation = await prisma.conversation.findUnique({
+          where: { id: existingConversations[0].id },
+          include: { messages: { orderBy: { createdAt: "asc" } }, model: true },
+        });
+      } else {
+        // Create a new conversation only if none exist
         conversation = await prisma.conversation.create({
           data: {
             user: { connect: { id: userId } },
@@ -177,8 +190,8 @@ export const GET = async (req: NextRequest) => {
       }
 
       return NextResponse.json({
-        history: conversation.messages,
-        conversationId: conversation.id,
+        history: conversation?.messages,
+        conversationId: conversation?.id,
         model,
       });
     }
