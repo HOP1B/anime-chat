@@ -13,7 +13,7 @@ const Home = () => {
       <div className="flex text-gray-500 justify-between">
         <div>
           <p>Welcome back,</p>
-          <p>{session?.user.username}</p>
+          <p>{session?.user.username} </p>
         </div>
         <div className="relative inline-flex items-center">
           <Input
