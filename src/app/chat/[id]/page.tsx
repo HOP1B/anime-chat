@@ -1,19 +1,97 @@
 "use client";
 
 import Image from "next/image";
-import ChatSidebar from "@/components/ChatSidebar";
-import { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useChatStore } from "@/lib/hooks/useChatStore";
+import { useSession } from "@clerk/nextjs";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
+import { Message } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SendHorizontal } from "lucide-react";
-import { useChatStore } from "@/lib/hooks/useChatStore";
-import { CharacterPanelProps } from "@/lib/types";
-import ChatHistoryPage from "@/components/Message";
+import { SendHorizontal, Loader2 } from "lucide-react";
+import ChatSidebar from "@/components/ChatSidebar";
 
-const ChatSidePage = () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { model, history, sendMessage, isLoading } = useChatStore();
+// Interface for ChatMessage props
+interface ChatMessageProps {
+  message: Message & { isLoading?: boolean };
+  userImage?: string;
+  userName?: string;
+  aiImage?: string;
+  aiName?: string;
+}
+
+// Chat Message Component
+const ChatMessage: React.FC<ChatMessageProps> = ({
+  message,
+  userImage,
+  userName = "You",
+  aiImage = "/asd.jpg",
+  aiName = "AI",
+}) => {
+  const isUser = message.role === "user";
+  const isLoading = "isLoading" in message ? message.isLoading : false;
+
+  return (
+    <div
+      className={cn("flex items-start gap-2", isUser ? "flex-row-reverse" : "")}
+    >
+      {isUser ? (
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={userImage} alt={userName} />
+          <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+        </Avatar>
+      ) : (
+        <Avatar className="h-8 w-8">
+          <AvatarImage src={aiImage || "/asd.jpg"} alt={aiName} />
+          <AvatarFallback>{aiName.charAt(0)}</AvatarFallback>
+        </Avatar>
+      )}
+      <div
+        className={cn(
+          "rounded-lg p-3 max-w-md",
+          message.role === "model" ? "bg-blue-100 text-blue-900" : "bg-gray-100"
+        )}
+      >
+        {isLoading ? (
+          <div className="flex items-center space-x-2">
+            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+            <p className="text-sm text-gray-500">Thinking...</p>
+          </div>
+        ) : (
+          <p className="text-sm whitespace-pre-wrap">
+            {message.content || message.text}
+          </p>
+        )}
+        {message.createdAt && !isLoading && (
+          <p className="mt-1 text-xs text-gray-500">
+            {new Date(message.createdAt).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Main Chat History Page Component
+const ChatHistoryPage = () => {
+  const { model, history, sendMessage, isLoading, isAiThinking } =
+    useChatStore();
+  const session = useSession();
   const [inputValue, setInputValue] = useState("");
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom whenever messages change
+  useEffect(() => {
+    if (scrollContainerRef.current) {
+      const scrollContainer = scrollContainerRef.current;
+      scrollContainer.scrollTop = scrollContainer.scrollHeight;
+    }
+  }, [history]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
@@ -33,58 +111,86 @@ const ChatSidePage = () => {
   };
 
   // Prepare props for ChatSidebar component
-  const sidebarProps: CharacterPanelProps = {
+  const sidebarProps = {
     name: model?.nameOfChar || "Unknown",
     img: model?.imageUrl || "/asd.jpg",
     description: model?.description || "Ready",
   };
 
   return (
-    <>
-      <div className="h-screen w-full bg-[#ffffff] flex items-center text-black gap-2">
-        <div className="h-screen w-full flex flex-col items-center pl-24">
-          <div>
-            <Image
-              src={model?.imageUrl || "/asd.jpg"}
-              alt={model?.nameOfChar || "AI Character"}
-              width={80}
-              height={10}
-              className="rounded-full mt-32"
-            />
-            <p className="text-center mt-2 font-medium">{model?.nameOfChar}</p>
-            <p className="text-center max-w-md mt-2">{model?.description}</p>
-          </div>
-          <ChatHistoryPage></ChatHistoryPage>
-          <div className="text-[#666666] flex flex-col items-center">
-            <div className="flex justify-center">
-              <div className="fixed bottom-4 p-2">
-                <Input
-                  className="rounded-full bg-gray-100 w-[600px] h-11 relative focus:outline-none"
-                  placeholder={`Message to ${model?.nameOfChar || "AI"}`}
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyPress}
-                  disabled={isLoading}
-                />
-                <Button
-                  className="rounded-full absolute bottom-3 right-3"
-                  onClick={handleSubmit}
-                  disabled={isLoading || inputValue.trim().length < 2}
-                >
-                  <SendHorizontal />
-                </Button>
-              </div>
+    <div className="h-screen w-full flex items-center text-black gap-2">
+      <div className="h-screen w-full flex flex-col items-center pl-24">
+        <div className="mt-32 mb-4 flex flex-col items-center">
+          <Image
+            src={model?.imageUrl || "/asd.jpg"}
+            alt={model?.nameOfChar || "AI Character"}
+            width={80}
+            height={80}
+            className="rounded-full"
+            priority
+          />
+          <p className="text-center mt-2 font-medium">{model?.nameOfChar}</p>
+          <p className="text-center max-w-md mt-2">{model?.description}</p>
+        </div>
+
+        <div className="w-full max-w-3xl px-4 flex-1 mb-20">
+          <ScrollArea className="h-[calc(100vh-350px)]" scrollHideDelay={100}>
+            <div className="pr-4" ref={scrollContainerRef}>
+              {!history || history.length === 0 ? (
+                <div className="flex h-64 w-full items-center justify-center">
+                  <p className="text-gray-500">No messages yet</p>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {history.map((message, index) => (
+                    <ChatMessage
+                      key={message.id || index}
+                      message={message}
+                      userImage={session.session?.user.imageUrl}
+                      userName={session.session?.user.firstName || "You"}
+                      aiImage={model?.imageUrl || "/asd.jpg"}
+                      aiName={model?.nameOfChar || "AI"}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
+          </ScrollArea>
+        </div>
+
+        <div className="fixed bottom-4 px-4 w-full max-w-3xl">
+          <div className="relative">
+            <Input
+              className="rounded-full bg-gray-100 w-full h-11 pr-12 focus:outline-none"
+              placeholder={`Message to ${model?.nameOfChar || "AI"}`}
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyPress}
+              disabled={isLoading}
+            />
+            <Button
+              className="rounded-full absolute right-1 bottom-1 top-1"
+              onClick={handleSubmit}
+              disabled={isLoading || inputValue.trim().length < 2}
+            >
+              {isAiThinking ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white" />
+              ) : (
+                <SendHorizontal />
+              )}
+            </Button>
           </div>
         </div>
+      </div>
+      <div className="h-screen">
         <ChatSidebar
           name={sidebarProps.name}
           img={sidebarProps.img}
           description={sidebarProps.description}
         />
       </div>
-    </>
+    </div>
   );
 };
 
-export default ChatSidePage;
+export default ChatHistoryPage;

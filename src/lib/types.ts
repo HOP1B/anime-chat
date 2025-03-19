@@ -17,6 +17,7 @@ export type CharacterFooterProps = {
 export type Message = {
   id: string;
   content: string;
-  role: "user" | "assistant";
+  role: "user" | "model";
   createdAt: string;
+  text: string;
 };

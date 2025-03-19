@@ -53,7 +53,7 @@ const Panel = () => {
   }, [user, isSignedIn]);
 
   return (
-    <div className="flex h-screen w-64 bg-gray-100 overflow-hidden z-50 fixed">
+    <div className="flex h-screen w-64 bg-gray-100 overflow-hidden">
       <Card className="w-full shadow-lg border-0 border-r-[1px] border-black rounded-none flex flex-col">
         <CardHeader>
           <CardTitle>
