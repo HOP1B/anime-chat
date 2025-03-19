@@ -10,7 +10,7 @@ export const POST = async (req: NextRequest) => {
 
     const { name, prompt, imageUrl, description, nameOfChar } = JSON.parse(
       rawBody || "{}"
-    ); // Handle empty body safely
+    );
 
     if (!name || !prompt || !nameOfChar || !imageUrl || !description) {
       return NextResponse.json(

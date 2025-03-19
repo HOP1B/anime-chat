@@ -34,7 +34,7 @@ const ChatSidePage = () => {
 
   useEffect(() => {
     const fetchConversationId = async () => {
-      const userId = await session.session?.user.id;
+      const userId = session.session?.user.id;
       if (!userId || !model?.name) return;
 
       try {
@@ -59,24 +59,24 @@ const ChatSidePage = () => {
           <div>
             <Image
               src={model?.imageUrl || "/asd.jpg"}
-              alt="Akeno Himejima"
+              alt="ZeroTwo"
               width={80}
               height={10}
               className="rounded-full mt-32"
             />
-            <p>Akeno Himejima</p>
+            <p>{model?.nameOfChar}</p>
           </div>
           <div className="text-[#666666] flex flex-col items-center">
-            <p>Priestess of Thunder and Lightning</p>
+            <p>{model?.description}</p>
           </div>
           <ChatSideFooter name="Message Akeno Himejima..." />
         </div>
         <ChatSidebar
-          name="Akeno Himejima"
-          img="/akeno.jpeg"
-          description="Priestess of Thunder and Lightning"
+          name={model?.nameOfChar || ""}
+          img={model?.imageUrl || ""}
+          description={model?.description || ""}
         />
-      </div>
+      </div>x
     </>
   );
 };

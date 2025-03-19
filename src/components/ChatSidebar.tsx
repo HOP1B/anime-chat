@@ -32,7 +32,7 @@ const ChatSidebar = ({ name, img, description }: CharacterPanelProps) => {
               <div>
                 <div className="flex flex-col">
                   <p>{name}</p>
-                  <p className="text-[#666666]">by User name</p>
+                  <p className="text-[#666666]">by admin</p>
                 </div>
               </div>
             </div>
