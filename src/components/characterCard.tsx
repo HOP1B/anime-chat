@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
 import { useSession } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { ModelType } from "@/lib/types";
+import { LoaderCircle } from "lucide-react";
+
 
 const CharacterCard = ({
   name,
@@ -16,7 +18,7 @@ const CharacterCard = ({
   useEffect(() => {
     const fetchConversationId = async () => {
       try {
-        const userId = await session.session?.user.id;
+        const userId = session.session?.user.id;
 
         const response = await axios.get(
           `/api/chat?userId=${userId}&modelName=${name}`
@@ -34,7 +36,7 @@ const CharacterCard = ({
 
   const href = `/chat/${conversationId}`;
   if (conversationId === null) {
-    return 0;
+    return <LoaderCircle className="animate-spin mt-10 flex " size={50} />;
   }
 
   return (
