@@ -12,8 +12,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import Image from "next/image";
 import { CharacterPanelProps } from "@/lib/types";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const ChatSidebar = ({ name, img, description }: CharacterPanelProps) => {
   return (
@@ -22,13 +22,14 @@ const ChatSidebar = ({ name, img, description }: CharacterPanelProps) => {
         <Card className="w-64 shadow-lg border-0 rounded-none flex flex-col">
           <CardHeader>
             <div className="flex gap-3 items-center">
-              <Image
-                src={img}
-                alt="gojo"
-                width={80}
-                height={10}
-                className=" rounded-full"
-              />
+              <Avatar className="h-10 w-10">
+                <AvatarImage
+                  src={img}
+                  alt={name}
+                  className="object-cover"
+                ></AvatarImage>
+                <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+              </Avatar>
               <div>
                 <div className="flex flex-col">
                   <p>{name}</p>

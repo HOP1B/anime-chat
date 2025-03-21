@@ -125,13 +125,6 @@ const ChatHistoryPage = () => {
     }
   };
 
-  // Prepare props for ChatSidebar component
-  const sidebarProps = {
-    name: model?.nameOfChar || "Unknown",
-    img: model?.imageUrl || "/asd.jpg",
-    description: model?.description || "Ready",
-  };
-
   return (
     <div className="h-screen w-full flex items-center text-black gap-2">
       <ScrollArea className="w-full h-screen pb-20" scrollHideDelay={0}>
@@ -206,9 +199,9 @@ const ChatHistoryPage = () => {
 
       <div className="h-screen">
         <ChatSidebar
-          name={sidebarProps.name}
-          img={sidebarProps.img}
-          description={sidebarProps.description}
+          name={model?.nameOfChar || "Unknown"}
+          img={model?.imageUrl || "/asd.jpg"}
+          description={model?.description || "Ready"}
         />
       </div>
     </div>
