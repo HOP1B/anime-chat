@@ -127,9 +127,9 @@ const ChatHistoryPage = () => {
 
   return (
     <div className="h-screen w-full flex items-center text-black gap-2">
-      <ScrollArea className="w-full h-screen pb-20" scrollHideDelay={0}>
+      <ScrollArea className="w-full h-screen" scrollHideDelay={0}>
         <div className="flex flex-col h-screen w-full items-center">
-          <div className="h-screen w-full flex flex-col items-center pl-24">
+          <div className="h-calc[100vh+40px] w-full flex flex-col items-center">
             <div className="mt-4 mb-4 flex flex-col items-center">
               <Avatar className="h-20 w-20">
                 <AvatarImage
@@ -171,7 +171,7 @@ const ChatHistoryPage = () => {
               </div>
             </div>
           </div>
-          <div className="fixed bottom-4 px-4 w-full max-w-3xl">
+          <div className="fixed bottom-4 px-4 w-full max-w-3xl h-11">
             <div className="relative">
               <Input
                 className="rounded-full bg-gray-100 w-full h-11 pr-12 focus:outline-none"
