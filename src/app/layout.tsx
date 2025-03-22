@@ -5,6 +5,7 @@ import Panel from "@/components/Panel";
 import "./globals.css";
 import QueryProvider from "@/components/QueryProvider";
 import { Toaster } from "@/components/ui/toaster";
+import "react-multi-carousel/lib/styles.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

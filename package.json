@@ -5,11 +5,11 @@
   "scripts": {
     "commit": "cz",
     "commit-all": "git add . && cz",
-    "dev": "next dev --turbopack",
+    "dev": "node ./node_modules/next/dist/bin/next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky"
+    "prepare": " husky"
   },
   "config": {
     "commitizen": {
@@ -34,11 +34,14 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-react": "^8.5.2",
+    "framer-motion": "^12.5.0",
     "lucide-react": "^0.475.0",
     "next": "15.1.7",
     "next-cloudinary": "^6.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-multi-carousel": "^2.8.5",
+    "swiper": "^11.2.6",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7"
   },

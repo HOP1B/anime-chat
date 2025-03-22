@@ -97,7 +97,7 @@ const Panel = () => {
   }, [userId]);
 
   return (
-    <div className="flex h-screen w-64 bg-gray-100 overflow-hidden">
+    <div className="flex h-full w-64 bg-gray-100 overflow-hidden">
       <Card className="w-full shadow-lg border-0 border-r-[1px] border-black rounded-none flex flex-col">
         <CardHeader>
           <CardTitle>
