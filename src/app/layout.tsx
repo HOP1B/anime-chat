@@ -34,7 +34,7 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
         >
-          <Panel />
+          <Panel></Panel>
           <QueryProvider>{children}</QueryProvider>
           <Toaster></Toaster>
         </body>

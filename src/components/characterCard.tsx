@@ -62,67 +62,52 @@ const CharacterCard = ({
   return (
     <Button
       onClick={chatRouterHandler}
-      className="p-0 h-auto w-full max-w-l block bg-transparent hover:bg-transparent"
+      className="p-0 h-full w-full rounded-xl overflow-hidden bg-transparent hover:bg-transparent relative group"
       disabled={isLoading}
     >
-      <div className="h-auto w-full bg-white border border-gray-200 flex items-center rounded-xl transition-all hover:shadow-md hover:border-blue-200 cursor-pointer overflow-hidden">
-        <div className="flex p-3 w-full">
-          <div className="relative h-28 min-w-24 w-24 rounded-lg overflow-hidden bg-gray-100">
-            {imageUrl ? (
-              <Image
-                src={imageUrl}
-                alt={`${nameOfChar || name} character`}
-                fill
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                className="object-cover"
-                priority
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center bg-gray-200">
-                <span className="text-gray-400 text-xl font-bold">
-                  {(nameOfChar || name)?.charAt(0)?.toUpperCase() || "?"}
-                </span>
-              </div>
-            )}
+      <div className="relative h-full w-full overflow-hidden rounded-xl">
+        {imageUrl ? (
+          <Image
+            src={imageUrl}
+            alt={`${nameOfChar || name} character`}
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform group-hover:scale-105"
+            priority
+          />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center bg-gray-200">
+            <span className="text-gray-400 text-2xl font-bold">
+              {(nameOfChar || name)?.charAt(0)?.toUpperCase() || "?"}
+            </span>
           </div>
-
-          <div className="flex flex-col pl-3 text-left w-full">
-            <div className="flex justify-between items-start">
-              <h3 className="font-medium text-gray-900 line-clamp-1">
-                {nameOfChar || name}
-              </h3>
-
-              {isLoading ? (
-                <span className="inline-flex items-center px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded">
-                  Loading...
-                </span>
-              ) : (
-                <span className="inline-flex items-center px-2 py-1 text-xs bg-green-100 text-green-800 rounded">
-                  Ready
-                </span>
-              )}
-            </div>
-
-            <p className="text-xs text-gray-500 mt-1">By: user</p>
-
-            <p className="text-sm text-gray-600 mt-2 line-clamp-2">
-              {truncatedDescription}
-            </p>
-
-            <div className="mt-2 pt-2 border-t border-gray-100">
-              <span className="text-xs font-medium text-blue-600 hover:text-blue-800">
-                Start conversation →
+        )}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+          <h3 className="font-bold text-xl mb-1">{nameOfChar || name}</h3>
+          <p className="text-xs text-gray-300 mb-2">By: user</p>
+          <p className="text-sm text-gray-200 mb-3">{truncatedDescription}</p>
+          <div className="flex justify-between items-center">
+            <span className="text-xs font-medium text-blue-300 group-hover:text-blue-200">
+              Start conversation →
+            </span>
+            {isLoading ? (
+              <span className="inline-flex items-center px-2 py-1 text-xs bg-blue-900/50 text-blue-100 rounded">
+                Loading...
               </span>
-            </div>
+            ) : (
+              <span className="inline-flex items-center px-2 py-1 text-xs bg-green-900/50 text-green-100 rounded">
+                Ready
+              </span>
+            )}
           </div>
         </div>
       </div>
-
       {isLoading && (
-        <div className="absolute inset-0 bg-white/50 rounded-xl flex items-center justify-center">
+        <div className="absolute inset-0 bg-black/50 rounded-xl flex items-center justify-center">
           <div className="flex flex-col items-center gap-2">
-            <div className="h-6 w-6 border-2 border-t-blue-600 border-gray-200 rounded-full animate-spin"></div>
-            <span className="text-sm text-blue-700">Connecting...</span>
+            <div className="h-6 w-6 border-2 border-t-blue-400 border-white/30 rounded-full animate-spin"></div>
+            <span className="text-sm text-blue-300">Connecting...</span>
           </div>
         </div>
       )}
@@ -130,18 +115,18 @@ const CharacterCard = ({
   );
 };
 
-// Loading skeleton for the character card
 export const CharacterCardSkeleton = () => {
   return (
-    <div className="h-auto w-full max-w-xs bg-white border border-gray-200 rounded-xl overflow-hidden">
-      <div className="flex p-3 w-full">
-        <Skeleton className="h-28 w-24 rounded-lg" />
-        <div className="flex flex-col pl-3 w-full gap-2">
-          <Skeleton className="h-5 w-3/4" />
-          <Skeleton className="h-3 w-1/3" />
-          <Skeleton className="h-4 w-full mt-1" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-3 w-1/2 mt-1" />
+    <div className="h-full w-full rounded-xl overflow-hidden bg-gray-800 relative">
+      <Skeleton className="h-full w-full" />
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 via-black/40 to-transparent">
+        <Skeleton className="h-6 w-3/4 bg-gray-700" />
+        <Skeleton className="h-3 w-1/3 bg-gray-700 mt-2" />
+        <Skeleton className="h-4 w-full bg-gray-700 mt-3" />
+        <Skeleton className="h-4 w-full bg-gray-700 mt-1" />
+        <div className="flex justify-between mt-3">
+          <Skeleton className="h-3 w-1/3 bg-gray-700" />
+          <Skeleton className="h-5 w-14 bg-gray-700 rounded" />
         </div>
       </div>
     </div>
