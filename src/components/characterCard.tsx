@@ -62,7 +62,7 @@ const CharacterCard = ({
   return (
     <Button
       onClick={chatRouterHandler}
-      className="p-0 h-full w-full rounded-xl overflow-hidden bg-transparent hover:bg-transparent relative group"
+      className="p-0 h-full w-full rounded-xl overflow-hidden bg-transparent hover:bg-transparent relative group hover:scale-105 transition-transform ease-in-out duration-300"
       disabled={isLoading}
     >
       <div className="relative h-full w-full overflow-hidden rounded-xl">

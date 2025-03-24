@@ -47,12 +47,12 @@ const CharacterPanel = () => {
       >
         <CarouselContent className="h-full py-2">
           {isLoading
-            ? Array(4)
+            ? Array(5)
                 .fill(0)
                 .map((_, index) => (
                   <CarouselItem
                     key={`skeleton-${index}`}
-                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 h-[calc(100vh-180px)]"
+                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/5 h-[calc(100vh-180px)]"
                   >
                     <CharacterCardSkeleton />
                   </CarouselItem>
@@ -67,7 +67,7 @@ const CharacterPanel = () => {
                 }) => (
                   <CarouselItem
                     key={model.id || model.name}
-                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 h-[calc(100vh-180px)] hover:scale-110 transition-transform duration-300 ease-in-out"
+                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/5 h-[calc(100vh-180px)] "
                   >
                     <CharacterCard
                       name={model.name}
