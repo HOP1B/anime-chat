@@ -67,7 +67,7 @@ const CharacterPanel = () => {
                 }) => (
                   <CarouselItem
                     key={model.id || model.name}
-                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 h-[calc(100vh-180px)]"
+                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 h-[calc(100vh-180px)] hover:scale-110 transition-transform duration-300 ease-in-out"
                   >
                     <CharacterCard
                       name={model.name}

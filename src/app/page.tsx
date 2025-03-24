@@ -13,7 +13,7 @@ const Home = () => {
       <div className="flex justify-between items-center">
         <div className="text-gray-700">
           <p className="text-gray-500">Welcome back,</p>
-          <p className="font-medium text-lg">
+          <p className="font-black text-3xl">
             {session?.user.username || "User"}
           </p>
         </div>
