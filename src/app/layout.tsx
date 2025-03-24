@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
-import Panel from "@/components/Panel";
-import "./globals.css";
-import QueryProvider from "@/components/QueryProvider";
 import { Toaster } from "@/components/ui/toaster";
+import QueryProvider from "@/components/QueryProvider";
+import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +31,8 @@ export default function RootLayout({
     >
       <html lang="en">
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased flex`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          <Panel></Panel>
           <QueryProvider>{children}</QueryProvider>
           <Toaster></Toaster>
         </body>

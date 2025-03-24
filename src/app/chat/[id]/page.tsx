@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SendHorizontal, Loader2 } from "lucide-react";
 import ChatSidebar from "@/components/ChatSidebar";
+import Panel from "@/components/Panel";
 
 // Interface for ChatMessage props
 interface ChatMessageProps {
@@ -126,83 +127,88 @@ const ChatHistoryPage = () => {
   };
 
   return (
-    <div className="h-screen w-full flex items-center text-black gap-2">
-      <ScrollArea className="w-full h-screen" scrollHideDelay={0}>
-        <div className="flex flex-col h-screen w-full items-center">
-          <div className="h-calc[100vh+40px] w-full flex flex-col items-center">
-            <div className="mt-4 mb-4 flex flex-col items-center">
-              <Avatar className="h-20 w-20">
-                <AvatarImage
-                  src={model?.imageUrl || "/asd.jpg"}
-                  alt={model?.name}
-                  className="object-cover"
-                />
-                <AvatarFallback>
-                  {model?.nameOfChar?.charAt(0) || "A"}
-                </AvatarFallback>
-              </Avatar>
-              <p className="text-center mt-2 font-medium">
-                {model?.nameOfChar}
-              </p>
-              <p className="text-center max-w-md mt-2">{model?.description}</p>
+    <div className="flex">
+      <Panel />
+      <div className="h-screen w-full flex items-center text-black gap-2">
+        <ScrollArea className="w-full h-screen" scrollHideDelay={0}>
+          <div className="flex flex-col h-screen w-full items-center">
+            <div className="h-calc[100vh+40px] w-full flex flex-col items-center">
+              <div className="mt-4 mb-4 flex flex-col items-center">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage
+                    src={model?.imageUrl || "/asd.jpg"}
+                    alt={model?.name}
+                    className="object-cover"
+                  />
+                  <AvatarFallback>
+                    {model?.nameOfChar?.charAt(0) || "A"}
+                  </AvatarFallback>
+                </Avatar>
+                <p className="text-center mt-2 font-medium">
+                  {model?.nameOfChar}
+                </p>
+                <p className="text-center max-w-md mt-2">
+                  {model?.description}
+                </p>
+              </div>
+              <div className="w-full px-4 flex-1 mb-20">
+                <div className="pr-4" ref={scrollContainerRef}>
+                  {!history || history.length === 0 ? (
+                    <div className="flex h-64 w-full items-center justify-center">
+                      <p className="text-gray-500">No messages yet</p>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-4 pb-4">
+                      {history.map((message, index) => (
+                        <ChatMessage
+                          key={message.id || index}
+                          message={message}
+                          userImage={session.session?.user.imageUrl}
+                          userName={session.session?.user.firstName || "You"}
+                          aiImage={model?.imageUrl || "/asd.jpg"}
+                          aiName={model?.nameOfChar || "AI"}
+                        />
+                      ))}
+                      {/* This invisible div will be used for scrolling to the bottom */}
+                      <div ref={messageEndRef} />
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
-            <div className="w-full px-4 flex-1 mb-20">
-              <div className="pr-4" ref={scrollContainerRef}>
-                {!history || history.length === 0 ? (
-                  <div className="flex h-64 w-full items-center justify-center">
-                    <p className="text-gray-500">No messages yet</p>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-4 pb-4">
-                    {history.map((message, index) => (
-                      <ChatMessage
-                        key={message.id || index}
-                        message={message}
-                        userImage={session.session?.user.imageUrl}
-                        userName={session.session?.user.firstName || "You"}
-                        aiImage={model?.imageUrl || "/asd.jpg"}
-                        aiName={model?.nameOfChar || "AI"}
-                      />
-                    ))}
-                    {/* This invisible div will be used for scrolling to the bottom */}
-                    <div ref={messageEndRef} />
-                  </div>
-                )}
+            <div className="fixed bottom-4 px-4 w-full max-w-3xl h-11">
+              <div className="relative">
+                <Input
+                  className="rounded-full bg-gray-100 w-full h-11 pr-12 focus:outline-none"
+                  placeholder={`Message to ${model?.nameOfChar || "AI"}`}
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyPress}
+                  disabled={isLoading}
+                />
+                <Button
+                  className="rounded-full absolute right-1 bottom-1 top-1"
+                  onClick={handleSubmit}
+                  disabled={isLoading || inputValue.trim().length < 2}
+                >
+                  {isAiThinking ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white" />
+                  ) : (
+                    <SendHorizontal />
+                  )}
+                </Button>
               </div>
             </div>
           </div>
-          <div className="fixed bottom-4 px-4 w-full max-w-3xl h-11">
-            <div className="relative">
-              <Input
-                className="rounded-full bg-gray-100 w-full h-11 pr-12 focus:outline-none"
-                placeholder={`Message to ${model?.nameOfChar || "AI"}`}
-                value={inputValue}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyPress}
-                disabled={isLoading}
-              />
-              <Button
-                className="rounded-full absolute right-1 bottom-1 top-1"
-                onClick={handleSubmit}
-                disabled={isLoading || inputValue.trim().length < 2}
-              >
-                {isAiThinking ? (
-                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white" />
-                ) : (
-                  <SendHorizontal />
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      </ScrollArea>
+        </ScrollArea>
 
-      <div className="h-screen">
-        <ChatSidebar
-          name={model?.nameOfChar || "Unknown"}
-          img={model?.imageUrl || "/asd.jpg"}
-          description={model?.description || "Ready"}
-        />
+        <div className="h-screen">
+          <ChatSidebar
+            name={model?.nameOfChar || "Unknown"}
+            img={model?.imageUrl || "/asd.jpg"}
+            description={model?.description || "Ready"}
+          />
+        </div>
       </div>
     </div>
   );
