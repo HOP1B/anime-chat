@@ -64,7 +64,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             <p className="text-sm text-gray-500">Thinking...</p>
           </div>
         ) : (
-          <p className="text-sm whitespace-pre-wrap">
+          <p className="text-base whitespace-pre-wrap">
             {message.content || message.text}
           </p>
         )}
@@ -131,9 +131,9 @@ const ChatHistoryPage = () => {
       <Panel />
       <div className="h-screen w-full flex items-center text-black gap-2">
         <ScrollArea className="w-full h-screen" scrollHideDelay={0}>
-          <div className="flex flex-col h-screen w-full items-center">
+          <div className="flex flex-col h-screen w-full items-center px-80">
             <div className="h-calc[100vh+40px] w-full flex flex-col items-center">
-              <div className="mt-4 mb-4 flex flex-col items-center">
+              <div className="mt-4 mb-10 flex flex-col items-center ">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
                     src={model?.imageUrl || "/asd.jpg"}
