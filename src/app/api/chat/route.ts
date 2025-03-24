@@ -205,3 +205,45 @@ export const GET = async (req: NextRequest) => {
     );
   }
 };
+
+export const DELETE = async (req: NextRequest) => {
+  try {
+    const { conversationId } = await req.json();
+
+    const conversation = await prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: { messages: { orderBy: { createdAt: "asc" } } },
+    });
+
+    if (!conversation) {
+      return NextResponse.json(
+        { error: "Conversation not found!" },
+        { status: 404 }
+      );
+    }
+
+    const messagesToDelete = conversation.messages
+      .slice(1)
+      .map((message) => message.id);
+
+    if (messagesToDelete.length > 0) {
+      await prisma.message.deleteMany({
+        where: {
+          id: { in: messagesToDelete },
+          conversationId: conversationId,
+        },
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      deletedCount: messagesToDelete.length,
+    });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+};

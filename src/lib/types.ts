@@ -9,6 +9,8 @@ export type CharacterPanelProps = {
   name: string;
   img: string;
   description: string;
+  deleteAllMessagesExceptFirst: () => Promise<void>;
+  isDeleting: boolean;
 };
 
 export type CharacterFooterProps = {

@@ -6,12 +6,13 @@ import { useSession } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Message } from "@/lib/types";
+import { CharacterPanelProps, Message } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { SendHorizontal, Loader2 } from "lucide-react";
 import ChatSidebar from "@/components/ChatSidebar";
 import Panel from "@/components/Panel";
+import axios from "axios";
 
 // Interface for ChatMessage props
 interface ChatMessageProps {
@@ -81,6 +82,57 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
   );
 };
 
+// Updated ChatSidebar Component
+const EnhancedChatSidebar = ({
+  name,
+  img,
+  description,
+}: CharacterPanelProps) => {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const { refreshMessages } = useChatStore();
+
+  const deleteAllMessagesExceptFirst = async () => {
+    try {
+      setIsDeleting(true);
+      // Get conversation ID from URL
+      const conversationId = window.location.pathname.split("/").pop();
+
+      if (!conversationId) {
+        console.error("No conversation ID found in URL");
+        return;
+      }
+
+      // Make the API call
+      await axios.delete("/api/chat", {
+        data: { conversationId },
+      });
+
+      // Refresh the messages
+      if (typeof refreshMessages === "function") {
+        await refreshMessages();
+      } else {
+        // Fallback: refresh the page
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error("Error deleting messages:", error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // Return the original ChatSidebar with the updated props
+  return (
+    <ChatSidebar
+      name={name}
+      img={img}
+      description={description}
+      deleteAllMessagesExceptFirst={deleteAllMessagesExceptFirst}
+      isDeleting={isDeleting}
+    />
+  );
+};
+
 // Main Chat History Page Component
 const ChatHistoryPage = () => {
   const { model, history, sendMessage, isLoading, isAiThinking } =
@@ -131,7 +183,7 @@ const ChatHistoryPage = () => {
       <Panel />
       <div className="h-screen w-full flex items-center text-black gap-2">
         <ScrollArea className="w-full h-screen" scrollHideDelay={0}>
-          <div className="flex flex-col h-screen w-full items-center px-80">
+          <div className="flex flex-col h-screen w-full items-center px-40">
             <div className="h-calc[100vh+40px] w-full flex flex-col items-center">
               <div className="mt-4 mb-10 flex flex-col items-center ">
                 <Avatar className="h-20 w-20">
@@ -203,10 +255,14 @@ const ChatHistoryPage = () => {
         </ScrollArea>
 
         <div className="h-screen">
-          <ChatSidebar
+          <EnhancedChatSidebar
             name={model?.nameOfChar || "Unknown"}
             img={model?.imageUrl || "/asd.jpg"}
             description={model?.description || "Ready"}
+            deleteAllMessagesExceptFirst={function (): Promise<void> {
+              throw new Error("Function not implemented.");
+            }}
+            isDeleting={false}
           />
         </div>
       </div>

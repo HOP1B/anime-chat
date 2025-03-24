@@ -272,6 +272,30 @@ export const useChatStore = () => {
     },
   });
 
+  // NEW FUNCTION: Refresh messages (keeping only the first one)
+  const refreshMessages = async () => {
+    try {
+      if (!conversationId) {
+        console.error("No conversation ID available");
+        return;
+      }
+
+      // Invalidate and refetch the conversation query to refresh messages
+      await queryClient.invalidateQueries({
+        queryKey: ["conversation", conversationId],
+      });
+
+      // Optionally refetch immediately
+      await queryClient.refetchQueries({
+        queryKey: ["conversation", conversationId],
+      });
+
+      console.log("Messages refreshed successfully");
+    } catch (error) {
+      console.error("Error refreshing messages:", error);
+    }
+  };
+
   // Get the messages from the conversation data
   const allMessages = conversationData?.conversation?.messages || [];
 
@@ -288,5 +312,7 @@ export const useChatStore = () => {
       createConversationMutation.mutate(modelName),
     isLoading: sendMessageMutation.isPending || isConversationLoading,
     isAiThinking,
+    // Add the new refreshMessages function to the returned object
+    refreshMessages,
   };
 };
