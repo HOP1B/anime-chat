@@ -1,11 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SignUpButton, SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
-import { Input } from "@/components/ui/input";
-import { Plus, Compass, Search } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "@clerk/nextjs";
@@ -106,21 +103,6 @@ const Panel = () => {
         </CardHeader>
         <CardContent className="flex flex-col justify-between flex-1 overflow-hidden">
           <div className="flex gap-2 flex-col">
-            <Button className="w-[90px] rounded-3xl bg-gray-100 text-black pl-10 hover:bg-gray-200">
-              Create
-              <Plus className="absolute left-9" />
-            </Button>
-            <Button className="bg-gray-100 text-black hover:bg-gray-200 ">
-              <Compass className="absolute left-9" />
-              Discover
-            </Button>
-            <div className="relative">
-              <Input
-                placeholder="Search..."
-                className="pl-10 bg-gray-100 focus:outline-none"
-              />
-              <Search className="w-4 absolute top-[6px] left-2" />
-            </div>
             {isLoading ? (
               <div></div>
             ) : (

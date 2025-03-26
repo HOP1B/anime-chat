@@ -65,7 +65,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
             <p className="text-sm text-gray-500">Thinking...</p>
           </div>
         ) : (
-          <p className="text-base whitespace-pre-wrap">
+          <p className="text-lg whitespace-pre-wrap">
             {message.content || message.text}
           </p>
         )}
