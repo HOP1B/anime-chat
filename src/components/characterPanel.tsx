@@ -12,11 +12,23 @@ import {
   CarouselApi,
 } from "@/components/ui/carousel";
 
-const CharacterPanel = () => {
-  const [models, setModels] = useState([]);
+interface ModelData {
+  id: string;
+  nameOfChar: string;
+  imageUrl: string;
+  name: string;
+  description: string;
+}
+
+interface CharacterPanelProps {
+  searchTerm?: string;
+}
+
+const CharacterPanel: React.FC<CharacterPanelProps> = ({ searchTerm = "" }) => {
+  const [models, setModels] = useState<ModelData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [api, setApi] = useState<CarouselApi>();
+  const [api, setApi] = useState<CarouselApi | null>(null);
 
   useEffect(() => {
     const fetchModels = async () => {
@@ -34,11 +46,17 @@ const CharacterPanel = () => {
     fetchModels();
   }, []);
 
+  // Filter models based on search term
+  const filteredModels = models.filter((model) =>
+    [model.name, model.nameOfChar, model.description].some((field) =>
+      field.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  );
+
   return (
     <div className="w-full h-full">
       <Carousel
         setApi={setApi}
-        className="h-full"
         opts={{
           align: "start",
           loop: true,
@@ -57,27 +75,19 @@ const CharacterPanel = () => {
                     <CharacterCardSkeleton />
                   </CarouselItem>
                 ))
-            : models.map(
-                (model: {
-                  id: string;
-                  nameOfChar: string;
-                  imageUrl: string;
-                  name: string;
-                  description: string;
-                }) => (
-                  <CarouselItem
-                    key={model.id || model.name}
-                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/5 h-[calc(100vh-140px)] "
-                  >
-                    <CharacterCard
-                      name={model.name}
-                      nameOfChar={model.nameOfChar}
-                      imageUrl={model.imageUrl}
-                      description={model.description}
-                    />
-                  </CarouselItem>
-                )
-              )}
+            : filteredModels.map((model) => (
+                <CarouselItem
+                  key={model.id || model.name}
+                  className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/5 h-[calc(100vh-140px)] "
+                >
+                  <CharacterCard
+                    name={model.name}
+                    nameOfChar={model.nameOfChar}
+                    imageUrl={model.imageUrl}
+                    description={model.description}
+                  />
+                </CarouselItem>
+              ))}
         </CarouselContent>
         <CarouselPrevious className="left-4 h-10 w-10" />
         <CarouselNext className="right-4 h-10 w-10" />

@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 import { CharacterPanelProps, Message } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SendHorizontal, Loader2 } from "lucide-react";
+import { SendHorizontal, LoaderCircle } from "lucide-react";
 import ChatSidebar from "@/components/ChatSidebar";
 import Panel from "@/components/Panel";
 import axios from "axios";
@@ -61,7 +61,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({
       >
         {isLoading ? (
           <div className="flex items-center space-x-2">
-            <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+            <LoaderCircle className="h-4 w-4 animate-spin text-gray-500" />
             <p className="text-sm text-gray-500">Thinking...</p>
           </div>
         ) : (

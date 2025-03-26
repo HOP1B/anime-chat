@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Flag } from "lucide-react";
-import { ImageDown } from "lucide-react";
 import { SquarePen } from "lucide-react";
 import { CharacterPanelProps } from "@/lib/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import axios from "axios";
 import { useChatStore } from "@/lib/hooks/useChatStore";
+import { Cog } from "lucide-react";
+import axios from "axios";
 
 const ChatSidebar = ({ name, img, description }: CharacterPanelProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -61,14 +60,7 @@ const ChatSidebar = ({ name, img, description }: CharacterPanelProps) => {
             </div>
           </div>
           <CardTitle className="flex flex-col border-b">
-            <div className="flex m-2 justify-between ">
-              <div className="border p-2 rounded-full w-10 h-10 flex items-center justify-center hover:cursor-pointer">
-                <ImageDown />
-              </div>
-              <div className="border p-2 rounded-full w-10 h-10  flex items-center justify-center hover:cursor-pointer">
-                <Flag />
-              </div>
-            </div>
+            <div className="flex m-2 justify-between "></div>
             <p className="font-extralight text-xs text-gray-700 mb-2">
               {description}
             </p>
@@ -83,7 +75,10 @@ const ChatSidebar = ({ name, img, description }: CharacterPanelProps) => {
               disabled={isDeleting}
             >
               {isDeleting ? (
-                <span className="animate-spin mr-2">⟳</span>
+                <span className="animate-spin mr-2">
+                  {" "}
+                  <Cog />
+                </span>
               ) : (
                 <SquarePen className="mr-2" size={16} />
               )}
