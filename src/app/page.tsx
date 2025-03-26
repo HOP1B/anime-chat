@@ -16,7 +16,7 @@ const Home = () => {
 
   return (
     <div className="h-screen flex flex-col px-6 pt-10 pb-4 w-full ">
-      <div className="flex justify-between items-center px-52">
+      <div className="flex justify-between items-center">
         <div className="text-gray-700">
           <p className="text-gray-500">Welcome back,</p>
           <p className="font-black text-3xl">
