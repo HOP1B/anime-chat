@@ -83,7 +83,7 @@ const CharacterCard = ({
           </div>
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-        <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-4 text-white text-pretty">
           <h3 className="font-bold text-xl mb-1">{nameOfChar || name}</h3>
           <p className="text-xs text-gray-300 mb-2">By: user</p>
           <p className="text-sm text-gray-200 mb-3">{truncatedDescription}</p>
