@@ -69,7 +69,7 @@ const CharacterPanel: React.FC<CharacterPanelProps> = ({ searchTerm = "" }) => {
                 .map((_, index) => (
                   <CarouselItem
                     key={`skeleton-${index}`}
-                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/5 h-[calc(100vh-66px)]"
+                    className="pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/5 h-[calc(100vh-24px)]"
                   >
                     <CharacterCardSkeleton />
                   </CarouselItem>

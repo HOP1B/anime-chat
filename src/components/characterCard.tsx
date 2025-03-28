@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useSession } from "@clerk/nextjs";
+import { SignInButton, useSession } from "@clerk/nextjs";
 import axios from "axios";
 import { useState } from "react";
 import { ModelType } from "@/lib/types";
@@ -7,6 +7,13 @@ import { Button } from "./ui/button";
 import { useRouter } from "next/navigation";
 import { Skeleton } from "./ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const CharacterCard = ({
   name,
@@ -19,17 +26,15 @@ const CharacterCard = ({
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
+  const [dialogShown, setDialogShown] = useState(false);
+
   const chatRouterHandler = async () => {
     try {
       setIsLoading(true);
       const userId = session?.user.id;
 
       if (!userId) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to start a chat",
-          variant: "destructive",
-        });
+        setDialogShown(true);
         return;
       }
 
@@ -65,6 +70,21 @@ const CharacterCard = ({
       className="p-0 h-full w-full rounded-xl overflow-hidden bg-transparent hover:bg-transparent relative group"
       disabled={isLoading}
     >
+      {dialogShown && (
+        <Dialog open>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>You are not authenticated</DialogTitle>
+            </DialogHeader>
+
+            <DialogFooter>
+              <SignInButton>
+                <Button type="submit">Sign In</Button>
+              </SignInButton>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
       <div className="relative h-full w-full overflow-hidden rounded-xl">
         {imageUrl ? (
           <Image
