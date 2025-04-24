@@ -1,36 +1,94 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+---
 
-## Getting Started
+```markdown
+# 🧠 Anime Chat
 
-First, run the development server:
+**Anime Chat** is a customizable anime-themed AI chatbot built with **Next.js**, **Prisma**, **Clerk**, **Tailwind CSS**, and **TanStack Query**. It connects to LLMs like **OpenAI**, **Gemini**, or **Ollama**, enabling immersive real-time character-based conversations.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## ✨ Features
+
+- 🎭 Anime-style AI personas with customizable behavior
+- 💬 Real-time chat with optimistic UI and loading states
+- 🧠 Persistent conversation memory with context
+- 🚀 Fast data fetching using TanStack Query
+- 🔐 Secure authentication via Clerk
+- 💾 PostgreSQL + Prisma for scalable data
+- 🎨 Beautiful UI styled with Tailwind CSS
+
+---
+
+## 🧱 Tech Stack
+
+- **Framework:** Next.js 15+ (App Router)
+- **Database:** PostgreSQL via Prisma
+- **Auth:** Clerk
+- **State & Fetching:** TanStack Query + Axios
+- **Styling:** Tailwind CSS
+- **LLMs:** Ollama / OpenAI / Gemini
+
+---
+
+## 📁 Structure Overview
+
+```
+/app             → Chat UI & routes  
+/api/chat        → API for messaging & conversation logic  
+/hooks           → `useChatStore` for managing chat logic  
+/lib/types.ts    → Shared type definitions  
+/prisma/schema   → Database schema  
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔧 Getting Started
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+# 1. Clone the repo
+git clone https://github.com/your-username/anime-chat.git
+cd anime-chat
 
-## Learn More
+# 2. Install dependencies
+pnpm install  # or npm install
 
-To learn more about Next.js, take a look at the following resources:
+# 3. Setup .env
+cp .env.example .env
+# Fill in DATABASE_URL, Clerk keys, LLM API keys
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# 4. Setup DB
+npx prisma generate
+npx prisma migrate dev --name init
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# 5. Run dev server
+pnpm dev  # or npm run dev
+```
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🚀 Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Deploy easily with [Vercel](https://vercel.com), or self-host using Docker (soon™). PostgreSQL can be hosted on [Neon](https://neon.tech) or Railway.
+
+---
+
+## 🤝 Contributing
+
+Anime Chat is still in development! PRs, issues, and ideas are welcome — especially if you vibe with anime, AI, and cool code.
+
+---
+
+## 📄 License
+
+MIT — go wild, but don’t summon cursed AI demons.
+
+---
+
+## ✍️ Created by Khegal
+
+> Built with purpose. Refined through madness. Dreamed into being.
+```
+
+---
+
+Let me know if you want branding suggestions, ASCII banners, or a version that includes example character configs too.
