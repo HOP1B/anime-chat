@@ -15,7 +15,6 @@
 - 🔐 **Secure Authentication**: User management via Clerk
 - 💾 **Scalable Database**: PostgreSQL with Prisma ORM
 - 🎨 **Beautiful UI**: Responsive design with Tailwind CSS
-- 📱 **Mobile-Friendly**: Works seamlessly on all devices
 
 ## 🧱 Tech Stack
 
