@@ -82,7 +82,7 @@ MIT — go wild, but don’t summon cursed AI demons.
 
 ---
 
-## ✍️ Created by Khegal
+## ✍️ Created by Khegal, Hydrix
 
 > Built with purpose. Refined through madness. Dreamed into being.
 ```
