@@ -2,6 +2,8 @@
 
 **Anime Chat** is a customizable anime-themed AI chatbot platform built with **Next.js**, **Prisma**, **Clerk**, **Tailwind CSS**, and **TanStack Query**. It connects to LLMs like **Gemini**, **OpenAI**, or **Ollama**, enabling immersive real-time character-based conversations with anime personas.
 
+🔗 **Live Demo**: [anime-chat-seven.vercel.app](https://anime-chat-seven.vercel.app)
+
 ![Anime Chat Banner](https://via.placeholder.com/1200x400?text=Anime+Chat)
 
 ## ✨ Features
@@ -80,6 +82,178 @@ The application uses a custom `useChatStore` hook built with TanStack Query to m
 
 The chat interface communicates with the chosen LLM (Gemini in the provided code) through API handlers in the `/api/chat` endpoints.
 
+## 💻 Key Code Implementations
+
+### Chat API (`/api/chat` Route)
+
+```typescript
+// Main POST function for handling chat messages
+export const POST = async (req: NextRequest) => {
+  try {
+    const { userId, prompt, modelName, conversationId } = await req.json();
+    
+    // Validate user exists
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return NextResponse.json({ error: "User not registered." }, { status: 403 });
+    
+    // Handle conversation state (existing or create new)
+    let conversation;
+    if (conversationId) {
+      conversation = await prisma.conversation.findUnique({
+        where: { id: conversationId },
+        include: { messages: { orderBy: { createdAt: "asc" } } },
+      });
+    } else {
+      // Create new conversation if none exists
+      conversation = await prisma.conversation.create({
+        data: {
+          user: { connect: { id: userId } },
+          model: { connect: { id: model.id } },
+          messages: {
+            create: [{ role: "user", text: model.basePrompt, modelId: model.id }],
+          },
+        },
+        include: { messages: { orderBy: { createdAt: "asc" } } },
+      });
+    }
+    
+    // Set up chat history for LLM context
+    const history = conversation.messages.map((msg) => ({
+      role: msg.role,
+      parts: [{ text: msg.text }],
+    }));
+    
+    // Initialize chat session with Gemini
+    const chatSession = ai.startChat({ generationConfig, history });
+    
+    // Save user message to database
+    await prisma.message.create({/*...*/});
+    
+    // Send message to AI and get response
+    let text = "";
+    try {
+      const result = await chatSession.sendMessage(prompt);
+      const response = await result.response;
+      text = await response.text();
+    } catch (aiError) {
+      console.error("AI error:", aiError);
+      return NextResponse.json({ error: "AI processing error" }, { status: 500 });
+    }
+    
+    // Save AI response to database
+    await prisma.message.create({/*...*/});
+    
+    return NextResponse.json({ text, conversationId: conversation.id });
+  } catch (error) {
+    console.error("Error processing request:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+};
+```
+
+### React Chat Hook (`useChatStore.ts`)
+
+```typescript
+export const useChatStore = () => {
+  const { id: conversationId } = useParams();
+  const session = useSession();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const userId = session.session?.user.id;
+  const [isAiThinking, setIsAiThinking] = useState(false);
+
+  // Fetch conversation details using React Query
+  const { data: conversationData, isLoading: isConversationLoading } =
+    useQuery<ConversationResponse>({
+      queryKey: ["conversation", conversationId],
+      queryFn: async () => {
+        if (!conversationId) throw new Error("No conversation ID provided");
+        const res = await axios.get(`/api/chat?conversationId=${conversationId}`);
+        return res.data;
+      },
+      enabled: !!conversationId,
+    });
+
+  // Send message mutation with optimistic updates
+  const sendMessageMutation = useMutation<
+    MessageResponse,
+    Error,
+    string,
+    MutationContext
+  >({
+    mutationFn: async (userMessage: string) => {
+      // Validation and API call logic
+      setIsAiThinking(true);
+      const response = await axios.post<MessageResponse>("/api/chat", {
+        prompt: userMessage,
+        userId,
+        modelName: conversationData?.conversation?.model?.name,
+        conversationId,
+      });
+      return response.data;
+    },
+    
+    // Optimistic UI update - show message immediately before server response
+    onMutate: async (userMessage) => {
+      // Creates temporary messages to show in UI while waiting for response
+      // This gives immediate feedback to users
+    },
+    
+    onSuccess: (data, _userMessage, context) => {
+      // Update UI with real AI response when received
+    },
+    
+    onError: (_error, _userMessage, context) => {
+      // Rollback to previous state if error occurs
+    },
+  });
+
+  // More utility functions for conversation management...
+
+  return {
+    model: conversationData?.conversation?.model,
+    history: visibleMessages,
+    conversations: conversationsData?.conversations || [],
+    sendMessage: (userMessage: string) => sendMessageMutation.mutate(userMessage),
+    createNewConversation: (modelName: string) => createConversationMutation.mutate(modelName),
+    isLoading: sendMessageMutation.isPending || isConversationLoading,
+    isAiThinking,
+    refreshMessages,
+  };
+};
+```
+
+### AI Character Model Creation
+
+```typescript
+export const POST = async (req: NextRequest) => {
+  try {
+    const { name, prompt, imageUrl, description, nameOfChar } = JSON.parse(rawBody || "{}");
+
+    // Input validation
+    if (!name || !prompt || !nameOfChar || !imageUrl || !description) {
+      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    }
+
+    // Create new character model in database
+    const model = await prisma.model.create({
+      data: {
+        name,           // Unique identifier for the model
+        basePrompt: prompt,  // Character instructions for the AI
+        imageUrl,       // Character avatar 
+        description,    // Brief description
+        nameOfChar,     // Character's display name
+      },
+    });
+
+    return NextResponse.json(model);
+  } catch (error) {
+    console.error("Error creating model:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+};
+```
+
 ## 🔧 Getting Started
 
 ```bash
@@ -146,7 +320,7 @@ Characters are defined with:
 
 ## 🤝 Contributing
 
-Anime Chat is still in early development! PRs and issues are welcome — especially if you love anime, code, or AI.
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
